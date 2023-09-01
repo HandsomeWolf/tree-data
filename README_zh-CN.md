@@ -6,7 +6,7 @@
 
 
 
-## Features
+## 功能
 
 - 数据转换
   - [将树结构转换为扁平数据](./docs/zh-CN/basic/convert/to-data.md)
