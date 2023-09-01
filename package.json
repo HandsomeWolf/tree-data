@@ -1,0 +1,43 @@
+{
+  "name": "@handsomewolf/tree-data",
+  "version": "1.0.0",
+  "description": "Data conversion, tree node manipulation, query and tree traversal, etc.",
+  "keywords": [
+    "data transformation",
+    "tree structure",
+    "hierarchical data",
+    "nested data",
+    "data manipulation",
+    "parent-child relationship",
+    "data filtering",
+    "data conversion"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/HandsomeWolf",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HandsomeWolf/data-transformer"
+  },
+  "author": "HandsomeWolf <55856773@qq.com> (https://github.com/handsomewolf)",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "test": "vitest",
+    "build": "tsup",
+    "build:watch": "tsup --watch"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@handsomewolf/eslint-config": "^0.0.19",
+    "@types/lodash": "^4.14.197",
+    "tsup": "^7.2.0",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.3"
+  }
+}
