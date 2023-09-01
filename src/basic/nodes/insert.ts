@@ -1,29 +1,27 @@
 import _ from "lodash";
 import {
   DEFAULT_CHILDREN_KEY,
-  DEFAULT_ID_KEY,
   DEFAULT_OPTIONS,
 } from "../../constants/parameters";
 import { createMap } from "../utils/create-map";
 
 export function insertNodesById(
   tree: TreeNode[],
-  parentId: number | string,
+  parentIds: (number | string)[],
   newNodes: TreeNode[],
   options: DefaultOptions = DEFAULT_OPTIONS,
 ): TreeNode[] {
-  const { childrenKey = DEFAULT_CHILDREN_KEY, idKey = DEFAULT_ID_KEY } =
-    options;
-  const nodeMap = createMap(tree, options);
-  const parentNode = nodeMap.get(parentId);
+  const { childrenKey = DEFAULT_CHILDREN_KEY } = options;
 
   const newTree = _.cloneDeep(tree);
+  const nodeMap = createMap(newTree, options);
 
-  if (parentNode) {
-    const newParentNode = _.find(newTree, { [idKey]: parentId });
-    if (newParentNode) {
-      newParentNode[childrenKey] = newParentNode[childrenKey] || [];
-      newParentNode[childrenKey].push(...newNodes);
+  for (const parentId of parentIds) {
+    const parentNode = nodeMap.get(parentId);
+
+    if (parentNode) {
+      parentNode[childrenKey] = parentNode[childrenKey] || [];
+      parentNode[childrenKey].push(...newNodes);
     }
   }
 
@@ -38,9 +36,8 @@ export function insertNodes(
 ): TreeNode[] {
   const { childrenKey = DEFAULT_CHILDREN_KEY } = options;
 
-  const nodeMap = createMap(tree, options);
-
   const newTree = _.cloneDeep(tree);
+  const nodeMap = createMap(newTree, options);
 
   for (const [_key, node] of nodeMap) {
     if (queryFunction(node)) {
