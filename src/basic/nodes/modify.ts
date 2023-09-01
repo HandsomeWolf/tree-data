@@ -9,7 +9,7 @@ export function modifyNodes(
   modifyFunction: (node: TreeNode) => TreeNode,
   options: DefaultOptions = DEFAULT_OPTIONS,
 ): TreeNode[] {
-  const childrenKey = options.childrenKey || DEFAULT_CHILDREN_KEY;
+  const { childrenKey = DEFAULT_CHILDREN_KEY } = options;
   const childrenKeyAsKeyOfTreeNode = childrenKey as keyof TreeNode;
 
   const queue = [...tree];
@@ -48,7 +48,7 @@ export function modifyNodesById(
   keyValuePairs: Partial<TreeNode>,
   options: DefaultOptions = DEFAULT_OPTIONS,
 ): TreeNode[] {
-  const childrenKey = options.childrenKey || DEFAULT_CHILDREN_KEY;
+  const { childrenKey = DEFAULT_CHILDREN_KEY } = options;
 
   const childrenKeyAsKeyOfTreeNode = childrenKey as keyof TreeNode;
 

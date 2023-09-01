@@ -8,7 +8,7 @@ export function treeToData(
   tree: TreeNode[],
   options: DefaultOptions = DEFAULT_OPTIONS,
 ): TreeNode[] {
-  const childrenKey = options.childrenKey || DEFAULT_CHILDREN_KEY;
+  const { childrenKey = DEFAULT_CHILDREN_KEY } = options;
   const data: TreeNode[] = [];
   const queue: TreeNode[] = [...tree];
 

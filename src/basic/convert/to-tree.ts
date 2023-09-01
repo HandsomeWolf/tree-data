@@ -10,8 +10,10 @@ export function dataToTree(
   data: TreeNode[],
   options: DefaultOptions = DEFAULT_OPTIONS,
 ): TreeNode[] {
-  const parentIdKey = options.parentIdKey || DEFAULT_PARENT_ID_KEY;
-  const childrenKey = options.childrenKey || DEFAULT_CHILDREN_KEY;
+  const {
+    parentIdKey = DEFAULT_PARENT_ID_KEY,
+    childrenKey = DEFAULT_CHILDREN_KEY,
+  } = options;
 
   const tree: TreeNode[] = [];
   // Use createMap to create a map (使用 createMap 创建映射)

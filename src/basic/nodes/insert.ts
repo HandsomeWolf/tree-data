@@ -1,5 +1,7 @@
+import _ from "lodash";
 import {
   DEFAULT_CHILDREN_KEY,
+  DEFAULT_ID_KEY,
   DEFAULT_OPTIONS,
 } from "../../constants/parameters";
 import { createMap } from "../utils/create-map";
@@ -10,19 +12,19 @@ export function insertNodesById(
   newNodes: TreeNode[],
   options: DefaultOptions = DEFAULT_OPTIONS,
 ): TreeNode[] {
-  const childrenKey = options.childrenKey || DEFAULT_CHILDREN_KEY;
-  const idKey = options.idKey || DEFAULT_OPTIONS.idKey;
+  const { childrenKey = DEFAULT_CHILDREN_KEY, idKey = DEFAULT_ID_KEY } =
+    options;
   const nodeMap = createMap(tree, options);
   const parentNode = nodeMap.get(parentId);
 
-  const newTree = JSON.parse(JSON.stringify(tree));
+  const newTree = _.cloneDeep(tree);
 
   if (parentNode) {
-    const newParentNode = newTree.find(
-      (node: TreeNode) => node[idKey] === parentId,
-    );
-    newParentNode[childrenKey] = newParentNode[childrenKey] || [];
-    newParentNode[childrenKey].push(...newNodes);
+    const newParentNode = _.find(newTree, { [idKey]: parentId });
+    if (newParentNode) {
+      newParentNode[childrenKey] = newParentNode[childrenKey] || [];
+      newParentNode[childrenKey].push(...newNodes);
+    }
   }
 
   return newTree;
@@ -34,17 +36,19 @@ export function insertNodes(
   newNodes: TreeNode[],
   options: DefaultOptions = DEFAULT_OPTIONS,
 ): TreeNode[] {
-  const childrenKey = options.childrenKey || DEFAULT_CHILDREN_KEY;
+  const { childrenKey = DEFAULT_CHILDREN_KEY } = options;
 
   const nodeMap = createMap(tree, options);
 
-  const newTree = JSON.parse(JSON.stringify(tree));
+  const newTree = _.cloneDeep(tree);
 
-  for (const [_, node] of nodeMap) {
+  for (const [_key, node] of nodeMap) {
     if (queryFunction(node)) {
-      const newNode = newTree.find((n: TreeNode) => n.id === node.id);
-      newNode[childrenKey] = newNode[childrenKey] || [];
-      newNode[childrenKey].push(...newNodes);
+      const newNode = _.find(newTree, { id: node.id });
+      if (newNode) {
+        newNode[childrenKey] = newNode[childrenKey] || [];
+        newNode[childrenKey].push(...newNodes);
+      }
     }
   }
 
