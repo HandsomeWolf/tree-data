@@ -1,6 +1,6 @@
 # @handsomewolf/tree-data
 
-[README](README.md) | [中文文档](README_zh.md)
+[README](README.md) | [中文文档](README_zh-CN.md)
 
 A utility for transforming and manipulating hierarchical data, including conversion of flat data to tree structures and data filtering.
 
