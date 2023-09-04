@@ -1,15 +1,17 @@
 ## 功能
 
-这两个函数的主要功能是删除树节点。`deleteNodesByIds`函数通过节点ID删除节点，而`deleteNodes`函数则通过一个删除函数来删除节点。删除函数应该接受一个节点作为参数，并返回一个布尔值以决定是否删除该节点。
+这两个函数的主要功能是删除树节点。
+
+`deleteNodesByIds`函数通过节点ID删除节点，而`deleteNodes`函数则通过一个删除函数来删除节点。删除函数应该接受一个节点作为参数，并返回一个布尔值以决定是否删除该节点。
 
 这两个函数的优化点主要在于使用队列（queue）代替递归。在处理树形结构数据时，递归是一种常见的方法。但是，递归可能会导致调用栈过深，从而引发堆栈溢出的问题。而使用队列，可以避免这个问题，因为它只需要常量级的额外空间。此外，使用队列还可以方便地实现广度优先搜索（BFS），这对于某些场景可能更为合适。
 
 ## 语法
 
 ```TypeScript
-deleteNodesByIds(tree,ids,option)
+deleteNodesByIds( tree, ids, option )
 
-deleteNodes(tree,deleteFunction,option)
+deleteNodes( tree, deleteFunction, option )
 ```
 
 ## 可选参数

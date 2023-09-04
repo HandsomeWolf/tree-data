@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { insertNodes, insertNodesById } from "../../../src/index";
 
-describe("insertNodes", () => {
+describe("insertNodesById", () => {
   describe("basic", () => {
     it("normal", () => {
       const tree = [
@@ -388,54 +388,149 @@ describe("insertNodes", () => {
       expect(result).toEqual(expected);
     });
   });
+  describe("custom", () => {
+    it("normal", () => {
+      const tree = [
+        { myId: 1, name: "Node 1", myChildren: [] },
+        { myId: 2, name: "Node 2", myChildren: [] },
+        { myId: 3, name: "Node 3", myChildren: [] },
+      ];
+      const newNodes = [
+        { myId: 4, name: "Node 4", myChildren: [] },
+        { myId: 5, name: "Node 5", myChildren: [] },
+      ];
 
-  it("should insert new nodes into the tree based on the query function", () => {
-    const tree = [
-      { id: 1, name: "Node 1", children: [] },
-      { id: 2, name: "Node 2", children: [] },
-      { id: 3, name: "Node 3", children: [] },
-    ];
-    const newNodes = [
-      { id: 4, name: "Node 4", children: [] },
-      { id: 5, name: "Node 5", children: [] },
-    ];
+      const result = insertNodes(tree, (node) => node.myId === 2, newNodes, {
+        idKey: "myId",
+        childrenKey: "myChildren",
+      });
 
-    const result = insertNodes(tree, (node) => node.id > 1, newNodes);
+      expect(result).toEqual([
+        { myId: 1, name: "Node 1", myChildren: [] },
+        {
+          myId: 2,
+          name: "Node 2",
+          myChildren: [
+            { myId: 4, name: "Node 4", myChildren: [] },
+            { myId: 5, name: "Node 5", myChildren: [] },
+          ],
+        },
+        { myId: 3, name: "Node 3", myChildren: [] },
+      ]);
+    });
+    it("no myChildren", () => {
+      const tree = [
+        { myId: 1, name: "Node 1" },
+        { myId: 2, name: "Node 2" },
+        { myId: 3, name: "Node 3" },
+      ];
+      const newNodes = [
+        { myId: 4, name: "Node 4" },
+        { myId: 5, name: "Node 5" },
+      ];
 
-    expect(result).toEqual([
-      { id: 1, name: "Node 1", children: [] },
-      {
-        id: 2,
-        name: "Node 2",
-        children: [
-          { id: 4, name: "Node 4", children: [] },
-          { id: 5, name: "Node 5", children: [] },
-        ],
-      },
-      {
-        id: 3,
-        name: "Node 3",
-        children: [
-          { id: 4, name: "Node 4", children: [] },
-          { id: 5, name: "Node 5", children: [] },
-        ],
-      },
-    ]);
-  });
+      const result = insertNodes(tree, (node) => node.myId === 2, newNodes, {
+        childrenKey: "myChildren",
+        idKey: "myId",
+      });
 
-  it("should not modify the tree if no nodes match the query function", () => {
-    const tree = [
-      { id: 1, name: "Node 1", children: [] },
-      { id: 2, name: "Node 2", children: [] },
-      { id: 3, name: "Node 3", children: [] },
-    ];
-    const newNodes = [
-      { id: 4, name: "Node 4", children: [] },
-      { id: 5, name: "Node 5", children: [] },
-    ];
+      expect(result).toEqual([
+        { myId: 1, name: "Node 1" },
+        {
+          myId: 2,
+          name: "Node 2",
+          myChildren: [
+            { myId: 4, name: "Node 4" },
+            { myId: 5, name: "Node 5" },
+          ],
+        },
+        { myId: 3, name: "Node 3" },
+      ]);
+    });
+    it("no myChildren and deep", () => {
+      const tree = [
+        {
+          myId: 1,
+          name: "Node 1",
+          myChildren: [
+            {
+              myId: 2,
+              name: "Node 2",
+              myChildren: [
+                {
+                  myId: 3,
+                  name: "Node 3",
+                  myChildren: [
+                    {
+                      myId: 4,
+                      name: "Node 4",
+                      myChildren: [
+                        {
+                          myId: 5,
+                          name: "Node 5",
+                          myChildren: [
+                            {
+                              myId: 6,
+                              name: "Node 6",
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        { myId: 7, name: "Node 2" },
+        { myId: 8, name: "Node 3" },
+      ];
+      const newNodes = [
+        { myId: 9, name: "Node 9" },
+        { myId: 10, name: "Node 10" },
+      ];
 
-    const result = insertNodes(tree, (node) => node.id === 4, newNodes);
+      const expected = [
+        {
+          myId: 1,
+          name: "Node 1",
+          myChildren: [
+            {
+              myId: 2,
+              name: "Node 2",
+              myChildren: [
+                {
+                  myId: 3,
+                  name: "Node 3",
+                  myChildren: [
+                    {
+                      myId: 4,
+                      name: "Node 4",
+                      myChildren: [
+                        {
+                          myId: 5,
+                          name: "Node 5",
+                          myChildren: [{ myId: 6, name: "Node 6" }],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        { myId: 7, name: "Node 2" },
+        { myId: 8, name: "Node 3" },
+      ];
 
-    expect(result).toEqual(tree);
+      const result = insertNodes(tree, (node) => node.myId === 6, newNodes, {
+        childrenKey: "myChildren",
+        idKey: "myId",
+      });
+
+      expect(result).toEqual(expected);
+    });
   });
 });
