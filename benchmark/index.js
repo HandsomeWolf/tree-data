@@ -1,11 +1,13 @@
+/* eslint-disable no-console */
+/* eslint-disable unicorn/prefer-module */
 const Benchmark = require("benchmark");
-const { treeToData } = require("../dist/index");
+const { getNodePathById } = require("../dist/index");
 
 const suite = new Benchmark.Suite();
 
 // 添加测试
 suite
-  .add("modifyNodesByIds", function () {
+  .add("getNodePathById", function () {
     const tree = [
       {
         id: 1,
@@ -24,7 +26,7 @@ suite
       },
     ];
 
-    treeToData(tree, { method: "DFS" });
+    getNodePathById(tree, 5);
   })
   // .add("deleteNodes", function () {
   //   // 你的测试代码

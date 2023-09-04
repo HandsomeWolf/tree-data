@@ -14,7 +14,7 @@ A utility for transforming and manipulating hierarchical data, including convers
 - Calculate tree depth and width
 - Get the path of a tree node
 - Get tree node
-- Get subtree
+- Get parent node
 - Filter tree node
 - Deep First Search
 - Breath First Search

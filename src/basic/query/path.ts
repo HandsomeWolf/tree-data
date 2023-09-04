@@ -1,41 +1,37 @@
-// 获取节点路径 (Get Node Path)
-export function getNodePath(
+import {
+  DEFAULT_CHILDREN_KEY,
+  DEFAULT_ID_KEY,
+  DEFAULT_OPTIONS,
+} from "../../constants/parameters";
+// 使用栈实现深度优先搜索 (Implement DFS using stack)
+export function getNodePathById(
   tree: TreeNode[],
   targetId: any,
-  idKey: string = "id",
-  childrenKey: string = "children",
+  options: DefaultOptions = DEFAULT_OPTIONS,
 ): TreeNode[] | null {
-  let path: TreeNode[] | null = null;
+  const { idKey = DEFAULT_ID_KEY, childrenKey = DEFAULT_CHILDREN_KEY } =
+    options;
 
-  function dfs(
-    node: TreeNode,
-    currentPath: TreeNode[],
-    depth: number,
-  ): boolean {
-    currentPath.push(node);
+  // 创建一个栈，用于存储节点和路径 (Create a stack to store nodes and paths)
+  const stack: { node: TreeNode; path: TreeNode[] }[] = tree.map((node) => ({
+    node,
+    path: [node],
+  }));
+
+  while (stack.length > 0) {
+    const { node, path } = stack.pop()!;
 
     if (node[idKey] === targetId) {
-      path = currentPath.slice(0, depth + 1);
-      return true;
+      return path;
     }
 
     const children = node[childrenKey] as TreeNode[];
     if (children) {
       for (const child of children) {
-        if (dfs(child, [...currentPath], depth + 1)) {
-          return true;
-        }
+        stack.push({ node: child, path: [...path, child] });
       }
     }
-
-    return false;
   }
 
-  for (const node of tree) {
-    if (dfs(node, [], 0)) {
-      break;
-    }
-  }
-
-  return path;
+  return null;
 }

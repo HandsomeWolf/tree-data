@@ -19,7 +19,7 @@
   - [计算树的深度与广度](./docs/zh-CN/basic/query/dimensions.md)
   - [获取树节点路径](./docs/zh-CN/basic/query/path.md)
   - [搜索树节点](./docs/zh-CN/basic/query/search.md)
-  - [获取子树](./docs/zh-CN/basic/query/subtree.md)
+  - [获取父级节点](./docs/zh-CN/basic/query/parent.md)
 - 遍历
   - [按条件过滤树](./docs/zh-CN/basic/traverse/filter.md)
   - [广度优先遍历](./docs/zh-CN/basic/traverse/bfs.md)

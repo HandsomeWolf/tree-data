@@ -1,29 +1,36 @@
+import {
+  DEFAULT_CHILDREN_KEY,
+  DEFAULT_OPTIONS,
+} from "../../constants/parameters";
+
 export function getTreeDimensions(
   tree: TreeNode[],
-  childrenKey: string = "children",
+  options: DefaultOptions = DEFAULT_OPTIONS,
 ): { depth: number; width: number } {
+  const { childrenKey = DEFAULT_CHILDREN_KEY } = options;
+
   let maxDepth = 0;
   let maxWidth = 0;
 
-  function dfs(node: TreeNode | null | undefined, depth: number): void {
-    if (node == null) {
-      // 节点可能为 null 或 undefined (Node could be null or undefined)
-      return;
-    }
+  // 使用队列来实现 BFS (Use a queue to implement BFS)
+  const queue: TreeNode[] = [...tree];
 
-    maxDepth = Math.max(maxDepth, depth);
-    maxWidth = Math.max(maxWidth, node[childrenKey]?.length || 0);
+  while (queue.length > 0) {
+    const levelSize = queue.length;
+    maxWidth = Math.max(maxWidth, levelSize);
+    maxDepth++;
 
-    const children = node[childrenKey] as TreeNode[];
-    if (children) {
-      for (const child of children) {
-        dfs(child, depth + 1);
+    // 处理当前层的所有节点 (Process all nodes at the current level)
+    for (let index = 0; index < levelSize; index++) {
+      const node = queue.shift();
+      if (node) {
+        // 确保 node 不是 undefined (Ensure node is not undefined)
+        const children = node[childrenKey];
+        if (Array.isArray(children)) {
+          queue.push(...children);
+        }
       }
     }
-  }
-
-  for (const node of tree) {
-    dfs(node, 1);
   }
 
   return { depth: maxDepth, width: maxWidth };

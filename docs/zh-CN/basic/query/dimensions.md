@@ -1,16 +1,40 @@
 ## 功能
 
-计算给定树的深度和宽度。它使用了深度优先搜索（DFS）的方法来遍历树的每一层，DFS 的优点是它不需要将所有节点存储在内存中，只需要存储当前路径上的节点。同时记录下当前层的节点数量（宽度）和当前的层数（深度）。最后返回的是树的最大深度和最大宽度。
+计算给定树的深度和宽度。
 
-- 树的深度（depth）是指从根节点到最远叶子节点的最长路径的长度
-- 树的宽度（width）是指树的所有层中，节点数量最多的那一层的节点数量。
+- 树的深度（depth）
+- 树的宽度（width）
 
 ## 语法
 
+```TypeScript
+getTreeDimensions(tree)
+```
+
 ## 可选参数
+
+| 参数名 | 值类型 | 作用 |
+| --- | --- | --- |
+| childrenKey | String | children的键名，默认为 `children` |
 
 ## 示例
 
 ```TypeScript
+import { modifyNodesByIds } from "@handsomewolf/tree-data";
 
-`
+const tree = [
+  {
+    id: 1,
+    children: [
+      { id: 2, children: [{ id: 4 }, { id: 5 }] },
+      { id: 3, children: [{ id: 6 }, { id: 7 }] },
+    ],
+  },
+];
+
+const { depth, width } = getTreeDimensions(tree);
+console.log(`depth:${depth},width:${width}`)
+
+// 输出：
+// depth:3,width:4
+```

@@ -42,7 +42,7 @@ describe("Tree Measurement", () => {
     const tree = [{ id: 1 }];
     const { depth, width } = getTreeDimensions(tree);
     expect(depth).toEqual(1);
-    expect(width).toEqual(0);
+    expect(width).toEqual(1);
   });
 
   it("binary tree", () => {
@@ -57,7 +57,7 @@ describe("Tree Measurement", () => {
     ];
     const { depth, width } = getTreeDimensions(tree);
     expect(depth).toEqual(3);
-    expect(width).toEqual(2);
+    expect(width).toEqual(4);
   });
 
   it("unbalanced tree", () => {

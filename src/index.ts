@@ -21,11 +21,11 @@ export { deleteNodesByIds, deleteNodes } from "./basic/nodes/delete";
 // Calculate tree depth and width
 export { getTreeDimensions } from "./basic/query/dimensions";
 // get tree path
-export { getNodePath } from "./basic/query/path";
+export { getNodePathById } from "./basic/query/path";
 // get tree
-export { searchTree } from "./basic/query/search";
-// get subtree
-export { getSubtree } from "./basic/query/subtree";
+export { getNodes } from "./basic/query/search";
+// get parentNodes
+export { getParentNodeById } from "./basic/query/parent";
 
 // ------------------------ basic-traverse ------------------------
 
@@ -35,3 +35,9 @@ export { filterTree } from "./basic/traverse/filter";
 export { traverseBFS } from "./basic/traverse/bfs";
 // dfs
 export { traverseDFS } from "./basic/traverse/dfs";
+
+// ------------------------ out ------------------------
+
+// print
+
+export { printTree } from "./basic/out/print";

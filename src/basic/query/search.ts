@@ -1,5 +1,5 @@
 // 树形数据搜索 (Search tree data)
-export function searchTree(
+export function getNodes(
   tree: TreeNode[],
   match: { [key: string]: any },
   options?: {
@@ -12,7 +12,10 @@ export function searchTree(
   const childrenKey = options?.childrenKey || "children";
   const includeChildren = options?.includeChildren || false;
   const result: TreeNode[] = [];
-  for (const node of tree) {
+  const stack: TreeNode[] = [...tree];
+
+  while (stack.length > 0) {
+    const node = stack.pop()!;
     if (Object.keys(match).every((key) => node[key] === match[key])) {
       if (includeChildren) {
         if (findAll) {
@@ -32,14 +35,7 @@ export function searchTree(
 
     const children = node[childrenKey as keyof TreeNode] as TreeNode[];
     if (children) {
-      const childResult = searchTree(children, match, options);
-      if (childResult) {
-        if (findAll) {
-          result.push(...(childResult as TreeNode[]));
-        } else {
-          return childResult;
-        }
-      }
+      stack.push(...children);
     }
   }
 
