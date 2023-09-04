@@ -8,10 +8,10 @@ export { dataToTree } from "./basic/convert/to-tree";
 // ------------------------ basic-nodes ------------------------
 
 // Modify tree nodes
-export { modifyNodesById, modifyNodes } from "./basic/nodes/modify";
+export { modifyNodesByIds, modifyNodes } from "./basic/nodes/modify";
 
 // insert tree nodes
-export { insertNodesById, insertNodes } from "./basic/nodes/insert";
+export { insertNodesByIds, insertNodes } from "./basic/nodes/insert";
 
 // delete tree nodes
 export { deleteNodesByIds, deleteNodes } from "./basic/nodes/delete";

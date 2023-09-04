@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { insertNodes, insertNodesById } from "../../../src/index";
+import { insertNodes, insertNodesByIds } from "../../../src/index";
 
-describe("insertNodesById", () => {
+describe("insertNodesByIds", () => {
   describe("basic", () => {
     it("normal", () => {
       const tree = [
@@ -28,7 +28,7 @@ describe("insertNodesById", () => {
         },
       ];
 
-      expect(insertNodesById(tree, [1], newNodes)).toEqual(expected);
+      expect(insertNodesByIds(tree, [1], newNodes)).toEqual(expected);
     });
     it("no children", () => {
       const tree = [
@@ -54,7 +54,7 @@ describe("insertNodesById", () => {
         },
       ];
 
-      expect(insertNodesById(tree, [1], newNodes)).toEqual(expected);
+      expect(insertNodesByIds(tree, [1], newNodes)).toEqual(expected);
     });
     it("no children and deep insert new nodes", () => {
       const tree = [
@@ -113,7 +113,7 @@ describe("insertNodesById", () => {
         },
       ];
 
-      expect(insertNodesById(tree, [5, 9], newNodes)).toEqual(expected);
+      expect(insertNodesByIds(tree, [5, 9], newNodes)).toEqual(expected);
     });
   });
 
@@ -144,7 +144,7 @@ describe("insertNodesById", () => {
       ];
 
       expect(
-        insertNodesById(tree, [1], newNodes, {
+        insertNodesByIds(tree, [1], newNodes, {
           childrenKey: "myChildren",
           idKey: "myId",
         }),
@@ -175,7 +175,7 @@ describe("insertNodesById", () => {
       ];
 
       expect(
-        insertNodesById(tree, [1], newNodes, {
+        insertNodesByIds(tree, [1], newNodes, {
           childrenKey: "myChildren",
           idKey: "myId",
         }),
@@ -242,7 +242,7 @@ describe("insertNodesById", () => {
       ];
 
       expect(
-        insertNodesById(tree, [5, 9], newNodes, {
+        insertNodesByIds(tree, [5, 9], newNodes, {
           childrenKey: "myChildren",
           idKey: "myId",
         }),

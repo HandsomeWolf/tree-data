@@ -4,6 +4,7 @@ export const DEFAULT_OPTIONS = {
   parentIdKey: "parentId",
   idKey: "id",
   rootParentIdValue: null,
+  method: "BFS" as method,
 };
 export const DELETED_OPTIONS = {
   ...DEFAULT_OPTIONS,

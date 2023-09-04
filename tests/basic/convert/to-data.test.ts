@@ -82,6 +82,87 @@ describe("treeToData", () => {
     });
   });
 
+  describe("DFS", () => {
+    it("tree", () => {
+      const tree = [
+        {
+          id: 1,
+          children: [{ id: 2, children: [{ id: 4 }] }, { id: 3 }],
+        },
+      ];
+      const expected = [{ id: 1 }, { id: 2 }, { id: 4 }, { id: 3 }];
+
+      expect(treeToData(tree, { method: "DFS" })).toEqual(expected);
+    });
+
+    it("deep tree", () => {
+      const tree = [
+        {
+          id: 1,
+          parentId: null,
+          children: [
+            {
+              id: 2,
+              parentId: 1,
+              children: [
+                {
+                  id: 4,
+                  parentId: 2,
+                  children: [
+                    {
+                      id: 5,
+                      parentId: 4,
+                      children: [
+                        {
+                          id: 6,
+                          parentId: 5,
+                          children: [
+                            {
+                              id: 7,
+                              parentId: 6,
+                              children: [
+                                {
+                                  id: 8,
+                                  parentId: 7,
+                                  children: [
+                                    {
+                                      id: 9,
+                                      parentId: 8,
+                                      children: [{ id: 10, parentId: 9 }],
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            { id: 3, parentId: 1 },
+          ],
+        },
+      ];
+      const expected = [
+        { id: 1, parentId: null },
+        { id: 2, parentId: 1 },
+        { id: 4, parentId: 2 },
+        { id: 5, parentId: 4 },
+        { id: 6, parentId: 5 },
+        { id: 7, parentId: 6 },
+        { id: 8, parentId: 7 },
+        { id: 9, parentId: 8 },
+        { id: 10, parentId: 9 },
+        { id: 3, parentId: 1 },
+      ];
+
+      expect(treeToData(tree, { method: "DFS" })).toEqual(expected);
+    });
+  });
+
   describe("custom Children Key", () => {
     it("normal", () => {
       const tree = [

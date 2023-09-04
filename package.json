@@ -31,12 +31,13 @@
     "build:watch": "tsup --watch"
   },
   "dependencies": {
-    "immer": "^10.0.2",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@handsomewolf/eslint-config": "^0.0.19",
+    "@types/benchmark": "^2.1.2",
     "@types/lodash": "^4.14.197",
+    "benchmark": "^2.1.4",
     "tsup": "^7.2.0",
     "typescript": "^5.2.2",
     "vitest": "^0.34.3"

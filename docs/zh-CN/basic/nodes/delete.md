@@ -1,6 +1,6 @@
 ## 功能
 
-这两个函数的主要功能是删除树节点。
+删除树节点。
 
 `deleteNodesByIds`函数通过节点ID删除节点，而`deleteNodes`函数则通过一个删除函数来删除节点。删除函数应该接受一个节点作为参数，并返回一个布尔值以决定是否删除该节点。
 
@@ -9,9 +9,9 @@
 ## 语法
 
 ```TypeScript
-deleteNodesByIds( tree, ids, option )
+deleteNodesByIds(tree, ids, option)
 
-deleteNodes( tree, deleteFunction, option )
+deleteNodes(tree, deleteFunction, option)
 ```
 
 ## 可选参数

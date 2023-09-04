@@ -1,6 +1,4 @@
 import _ from "lodash";
-import { produce } from "immer";
-
 import {
   DEFAULT_CHILDREN_KEY,
   DEFAULT_ID_KEY,
@@ -8,7 +6,7 @@ import {
 } from "../../constants/parameters";
 import { createMap } from "../utils/create-map";
 
-export function insertNodesById(
+export function insertNodesByIds(
   tree: TreeNode[],
   parentIds: (number | string)[],
   newNodes: TreeNode[],
@@ -16,18 +14,17 @@ export function insertNodesById(
 ): TreeNode[] {
   const { childrenKey = DEFAULT_CHILDREN_KEY } = options;
 
-  const nodeMap = createMap(tree, options);
+  const newTree = _.cloneDeep(tree);
+  const nodeMap = createMap(newTree, options);
 
-  const newTree = produce(tree, () => {
-    for (const parentId of parentIds) {
-      const parentNode = nodeMap.get(parentId);
+  for (const parentId of parentIds) {
+    const parentNode = nodeMap.get(parentId);
 
-      if (parentNode) {
-        parentNode[childrenKey] = parentNode[childrenKey] || [];
-        parentNode[childrenKey].push(...newNodes);
-      }
+    if (parentNode) {
+      parentNode[childrenKey] = parentNode[childrenKey] || [];
+      parentNode[childrenKey].push(...newNodes);
     }
-  });
+  }
 
   return newTree;
 }
@@ -41,19 +38,18 @@ export function insertNodes(
   const { idKey = DEFAULT_ID_KEY, childrenKey = DEFAULT_CHILDREN_KEY } =
     options;
 
-  const nodeMap = createMap(tree, options);
+  const newTree = _.cloneDeep(tree);
+  const nodeMap = createMap(newTree, options);
 
-  const newTree = produce(tree, (draftTree) => {
-    for (const [_key, node] of nodeMap) {
-      if (queryFunction(node)) {
-        const newNode = _.find(draftTree, { [idKey]: node[idKey] });
-        if (newNode) {
-          newNode[childrenKey] = newNode[childrenKey] || [];
-          newNode[childrenKey].push(...newNodes);
-        }
+  for (const [_key, node] of nodeMap) {
+    if (queryFunction(node)) {
+      const newNode = _.find(newTree, { [idKey]: node[idKey] });
+      if (newNode) {
+        newNode[childrenKey] = newNode[childrenKey] || [];
+        newNode[childrenKey].push(...newNodes);
       }
     }
-  });
+  }
 
   return newTree;
 }
