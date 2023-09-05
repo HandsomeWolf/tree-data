@@ -1,6 +1,6 @@
 ## 功能
 
-数据过滤
+单树的数据过滤
 
 选项对象可以包含以下属性：
 - include：一个对象，其键是节点对象的属性，值是一个数组，只有节点对象的对应属性值在这个数组中，节点才会被包含在过滤后的结果中。
@@ -29,25 +29,21 @@ filterTree(tree, options)
 ```TypeScript
 import { filterTree } from "@handsomewolf/tree-data";
 
-const tree = [
-  {
+const tree = {
     id: 1,
     parentId: null,
     children: [
       { id: 2, parentId: 1, children: [{ id: 4, parentId: 2 }] },
       { id: 3, parentId: 1 },
     ],
-  },
-];
+  }
 
 const result = filterTree(tree, { exclude: { id: [3] } })
 console.log(result)
 
 // 输出：
-// [
-//   {
-//     id: 1,
-//     parentId: null,
-//     children: [{ id: 2, parentId: 1, children: [{ id: 4, parentId: 2 }] }],
-//   },
-// ];
+// {
+//   id: 1,
+//   parentId: null,
+//   children: [{ id: 2, parentId: 1, children: [{ id: 4, parentId: 2 }] }],
+// },

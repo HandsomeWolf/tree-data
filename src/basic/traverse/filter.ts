@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 export function filterTree(
-  tree: TreeNode[],
+  tree: TreeNode,
   options?: {
     include?: { [key: string]: any[] };
     exclude?: { [key: string]: any[] };
@@ -9,17 +9,27 @@ export function filterTree(
     idKey?: string;
     isDeleteEmptyChildren?: boolean;
   },
-): TreeNode[] {
+) {
   const idKey = options?.idKey || "id";
   const childrenKey = options?.childrenKey || "children";
   const isDeleteEmptyChildren = options?.isDeleteEmptyChildren || false;
 
-  const newTree: TreeNode[] = _.cloneDeep(tree);
-  const queue: TreeNode[] = [...newTree];
+  const newTree: TreeNode = _.cloneDeep(tree);
+  const queue: TreeNode[] = [newTree];
   const parents: { [key: string]: TreeNode[] } = {};
 
   while (!_.isEmpty(queue)) {
     const node = queue.shift() as TreeNode;
+
+    // 检查节点是否包含 `id` 字段
+    if (!Object.prototype.hasOwnProperty.call(node, idKey)) {
+      throw new Error(`Node is missing '${idKey}' field`);
+    }
+
+    // 检查节点是否包含 `children` 字段
+    // if (!Object.prototype.hasOwnProperty.call(node, childrenKey)) {
+    //   node[childrenKey] = []; // Assign an empty array to the `children` field
+    // }
 
     if (options?.exclude) {
       markNodesForDeletion(node, options.exclude, idKey, parents);
@@ -62,7 +72,7 @@ export function filterTree(
     }
   }
 
-  return _.remove(newTree, (node) => !parents[node[idKey]]);
+  return newTree;
 }
 
 function markNodesForDeletion(
