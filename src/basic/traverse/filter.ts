@@ -18,25 +18,32 @@ export function filterTree(
   const queue: TreeNode[] = [newTree];
   const parents: { [key: string]: TreeNode[] } = {};
 
+  let includeExists = false; // Add a flag to check if any node satisfies the include condition (添加一个标志来检查是否有任何节点满足 include 条件)
+
   while (!_.isEmpty(queue)) {
     const node = queue.shift() as TreeNode;
 
-    // 检查节点是否包含 `id` 字段
     if (!Object.prototype.hasOwnProperty.call(node, idKey)) {
-      throw new Error(`Node is missing '${idKey}' field`);
+      console.warn(
+        `Node is missing '${idKey}' field. You may need to use the optional parameter {idKey: 'your custom id'}`,
+      );
     }
-
-    // 检查节点是否包含 `children` 字段
-    // if (!Object.prototype.hasOwnProperty.call(node, childrenKey)) {
-    //   node[childrenKey] = []; // Assign an empty array to the `children` field
-    // }
 
     if (options?.exclude) {
       markNodesForDeletion(node, options.exclude, idKey, parents);
     }
 
     if (options?.include) {
-      markNodesForDeletion(node, options.include, idKey, parents, true);
+      const includeResult = markNodesForDeletion(
+        node,
+        options.include,
+        idKey,
+        parents,
+        true,
+      );
+      if (includeResult) {
+        includeExists = true; // If any node satisfies the include condition, set the flag to true (如果有任何节点满足 include 条件，将标志设置为 true)
+      }
     }
 
     const children = node[childrenKey as keyof TreeNode] as TreeNode[];
@@ -49,6 +56,11 @@ export function filterTree(
         queue.push(child);
       }
     }
+  }
+
+  // If the include option is set and no node satisfies the include condition, return null (如果设置了 include 选项并且没有节点满足 include 条件，返回 null)
+  if (options?.include && !includeExists) {
+    return null;
   }
 
   for (const parentList of Object.values(parents)) {
@@ -74,7 +86,6 @@ export function filterTree(
 
   return newTree;
 }
-
 function markNodesForDeletion(
   node: TreeNode,
   filter: { [key: string]: any[] },
@@ -82,6 +93,8 @@ function markNodesForDeletion(
   parents: { [key: string]: TreeNode[] },
   isInclude?: boolean,
 ) {
+  let includeExists = false; // Add a flag to check if the node satisfies the include condition (添加一个标志来检查节点是否满足 include 条件)
+
   for (const key of Object.keys(filter)) {
     const shouldDelete = isInclude
       ? !filter[key].includes(node[key]) &&
@@ -98,6 +111,7 @@ function markNodesForDeletion(
         }
       }
     } else if (isInclude) {
+      includeExists = true; // If the node satisfies the include condition, set the flag to true (如果节点满足 include 条件，将标志设置为 true)
       let parentList = _.get(parents, node[idKey]);
       while (parentList && parentList.length > 0) {
         for (const parent of parentList) {
@@ -107,6 +121,8 @@ function markNodesForDeletion(
       }
     }
   }
+
+  return includeExists; // Return the flag (返回标志)
 }
 
 function areAllChildrenExcluded(

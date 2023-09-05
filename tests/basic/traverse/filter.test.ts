@@ -440,4 +440,32 @@ describe("filterTree", () => {
       ).toEqual(expected);
     });
   });
+
+  describe("include does not exist", () => {
+    it("normal", () => {
+      const tree = {
+        id: 1,
+        parentId: null,
+        children: [
+          { id: 2, parentId: 1, children: [{ id: 4, parentId: 2 }] },
+          { id: 3, parentId: 1, children: [{ id: 4, parentId: 3 }] },
+        ],
+      };
+      const expected = null;
+
+      console.log(
+        JSON.stringify(
+          filterTree(tree, {
+            include: { parentId: [888] },
+          }),
+        ),
+      );
+
+      expect(
+        filterTree(tree, {
+          include: { parentId: [888] },
+        }),
+      ).toEqual(expected);
+    });
+  });
 });
