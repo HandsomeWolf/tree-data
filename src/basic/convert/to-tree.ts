@@ -45,5 +45,5 @@ export function dataToTree(
     }
   }
 
-  return tree.length <= 1 ? tree[0] : tree;
+  return tree;
 }

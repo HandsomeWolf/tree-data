@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { treeToData } from "../../../src/index";
+import { treesToData } from "../../../src/index";
 
-describe("treeToData", () => {
+describe("treesToData", () => {
   describe("basic", () => {
     it("normal", () => {
       const tree = {
@@ -10,7 +10,7 @@ describe("treeToData", () => {
       };
       const expected = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
 
-      expect(treeToData(tree)).toEqual(expected);
+      expect(treesToData(tree)).toEqual(expected);
     });
 
     it("deep tree", () => {
@@ -75,7 +75,27 @@ describe("treeToData", () => {
         { id: 10, parentId: 9 },
       ];
 
-      expect(treeToData(tree)).toEqual(expected);
+      expect(treesToData(tree)).toEqual(expected);
+    });
+
+    it("multiple trees", () => {
+      const trees = [
+        {
+          id: 1,
+          children: [{ id: 2 }, { id: 3, children: [{ id: 4 }] }],
+        },
+        {
+          id: 5,
+          children: [{ id: 6 }, { id: 7, children: [{ id: 8 }] }],
+        },
+      ];
+
+      const expectedOutput = [
+        [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+        [{ id: 5 }, { id: 6 }, { id: 7 }, { id: 8 }],
+      ];
+
+      expect(treesToData(trees)).toEqual(expectedOutput);
     });
   });
 
@@ -87,7 +107,7 @@ describe("treeToData", () => {
       };
       const expected = [{ id: 1 }, { id: 3 }, { id: 2 }, { id: 4 }];
 
-      expect(treeToData(tree, { method: "DFS" })).toEqual(expected);
+      expect(treesToData(tree, { traversalMethod: "DFS" })).toEqual(expected);
     });
 
     it("deep tree", () => {
@@ -152,7 +172,7 @@ describe("treeToData", () => {
         { id: 10, parentId: 9 },
       ];
 
-      expect(treeToData(tree, { method: "DFS" })).toEqual(expected);
+      expect(treesToData(tree, { traversalMethod: "DFS" })).toEqual(expected);
     });
   });
 
@@ -176,7 +196,7 @@ describe("treeToData", () => {
         { myId: 3, myParentId: 1 },
         { myId: 4, myParentId: 2 },
       ];
-      expect(treeToData(tree, { childrenKey: "customChildren" })).toEqual(
+      expect(treesToData(tree, { childrenKey: "customChildren" })).toEqual(
         expected,
       );
     });
@@ -234,7 +254,7 @@ describe("treeToData", () => {
         { id: 10 },
       ];
 
-      expect(treeToData(tree, { childrenKey: "customChildren" })).toEqual(
+      expect(treesToData(tree, { childrenKey: "customChildren" })).toEqual(
         expected,
       );
     });
@@ -243,18 +263,18 @@ describe("treeToData", () => {
   describe("empty object and one element", () => {
     it("empty object", () => {
       const tree = {};
-      expect(() => treeToData(tree)).toThrow();
+      expect(() => treesToData(tree)).toThrow();
     });
 
     it("object with one element", () => {
       const tree = { id: 1, parentId: null };
       const expected = [{ id: 1, parentId: null }];
-      expect(treeToData(tree)).toEqual(expected);
+      expect(treesToData(tree)).toEqual(expected);
     });
   });
 
   it("parameter is not object", () => {
     const tree = undefined;
-    expect(() => treeToData(tree)).toThrow();
+    expect(() => treesToData(tree as any)).toThrow();
   });
 });

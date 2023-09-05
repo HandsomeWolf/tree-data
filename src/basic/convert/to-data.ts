@@ -1,26 +1,31 @@
 import {
+  type KeyValueObject,
+  type TreeToDataOptions,
+} from "../../interfaces/options";
+import {
   DEFAULT_CHILDREN_KEY,
-  DEFAULT_OPTIONS,
+  TREE_TO_DATA_OPTIONS,
 } from "../../constants/parameters";
 
-export function treeToData(
-  tree: TreeNode,
-  options: DefaultOptions = DEFAULT_OPTIONS,
+function treeToData(
+  tree: KeyValueObject,
+  options: TreeToDataOptions = TREE_TO_DATA_OPTIONS,
 ) {
   if (typeof tree !== "object" || Object.keys(tree).length === 0) {
     throw new Error("Invalid tree: Tree must be a non-empty object."); // 抛出错误：树必须是非空对象
   }
 
-  const { childrenKey = DEFAULT_CHILDREN_KEY, method = "BFS" } = options;
-  const data: TreeNode[] = [];
-  const queueOrStack: TreeNode[] = [tree];
+  const { childrenKey = DEFAULT_CHILDREN_KEY, traversalMethod = "BFS" } =
+    options;
+  const data: KeyValueObject[] = [];
+  const queueOrStack: KeyValueObject[] = [tree];
 
   const getNode = (
-    method === "BFS" ? queueOrStack.shift : queueOrStack.pop
+    traversalMethod === "BFS" ? queueOrStack.shift : queueOrStack.pop
   ).bind(queueOrStack);
 
   while (queueOrStack.length > 0) {
-    const node: TreeNode | undefined = getNode();
+    const node: KeyValueObject | undefined = getNode();
 
     if (!node) {
       throw new Error("Unexpected error: Node is undefined."); // 抛出错误：节点未定义
@@ -28,7 +33,7 @@ export function treeToData(
 
     if (node[childrenKey]) {
       const childrenNodes =
-        method === "BFS" ? node[childrenKey] : node[childrenKey];
+        traversalMethod === "BFS" ? node[childrenKey] : node[childrenKey];
       queueOrStack.push(...childrenNodes);
       delete node[childrenKey];
     }
@@ -36,4 +41,15 @@ export function treeToData(
   }
 
   return data;
+}
+
+export function treesToData(
+  trees: KeyValueObject | KeyValueObject[],
+  options: TreeToDataOptions = TREE_TO_DATA_OPTIONS,
+): KeyValueObject[] | KeyValueObject[][] {
+  // 如果trees是一个数组，那么我们处理多个树
+  // If trees is an array, then we process multiple trees
+  return Array.isArray(trees)
+    ? trees.map((tree) => treeToData(tree, options))
+    : treeToData(trees, options);
 }
