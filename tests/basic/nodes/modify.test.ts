@@ -11,6 +11,10 @@ describe("modifyNodes", () => {
           id: 1,
           children: [{ id: 2 }],
         },
+        {
+          id: 1,
+          children: [{ id: 2 }],
+        },
       ];
 
       const modifiedTree = modifyNodes(tree, (node) => {
@@ -19,6 +23,11 @@ describe("modifyNodes", () => {
       });
 
       expect(modifiedTree).toEqual([
+        {
+          id: 1,
+          children: [{ id: 2, newKey: "newValue" }],
+          newKey: "newValue",
+        },
         {
           id: 1,
           children: [{ id: 2, newKey: "newValue" }],
