@@ -1,7 +1,7 @@
 // ------------------------ basic-convert ------------------------
 
 // Convert tree structure to data
-export { treeToData } from "./basic/convert/to-data";
+export { treesToData } from "./basic/convert/to-data";
 // Convert data to tree structure
 export { dataToTree } from "./basic/convert/to-tree";
 

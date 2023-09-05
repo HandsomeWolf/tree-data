@@ -5,13 +5,17 @@ import {
   DEFAULT_OPTIONS,
 } from "../../constants/parameters";
 import { createMap } from "../utils/create-map";
+import {
+  type InsertOptions,
+  type KeyValueObject,
+} from "../../interfaces/options";
 
 export function insertNodesByIds(
-  tree: TreeNode[],
+  tree: KeyValueObject[],
   parentIds: (number | string)[],
-  newNodes: TreeNode[],
-  options: DefaultOptions = DEFAULT_OPTIONS,
-): TreeNode[] {
+  newNodes: KeyValueObject[],
+  options: InsertOptions = DEFAULT_OPTIONS,
+): KeyValueObject[] {
   const { childrenKey = DEFAULT_CHILDREN_KEY } = options;
 
   const newTree = _.cloneDeep(tree);
@@ -30,11 +34,11 @@ export function insertNodesByIds(
 }
 
 export function insertNodes(
-  tree: TreeNode[],
-  queryFunction: (node: TreeNode) => boolean,
-  newNodes: TreeNode[],
-  options: DefaultOptions = DEFAULT_OPTIONS,
-): TreeNode[] {
+  tree: KeyValueObject[],
+  queryFunction: (node: KeyValueObject) => boolean,
+  newNodes: KeyValueObject[],
+  options: InsertOptions = DEFAULT_OPTIONS,
+): KeyValueObject[] {
   const { idKey = DEFAULT_ID_KEY, childrenKey = DEFAULT_CHILDREN_KEY } =
     options;
 
