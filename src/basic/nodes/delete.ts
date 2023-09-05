@@ -1,15 +1,19 @@
 import _ from "lodash";
 import {
+  type DeleteOptions,
+  type KeyValueObject,
+} from "../../interfaces/options";
+import {
   DEFAULT_CHILDREN_KEY,
   DEFAULT_ID_KEY,
   DEFAULT_OPTIONS,
 } from "../../constants/parameters";
 // 删除树节点的函数，通过ID
 export function deleteNodesByIds(
-  tree: TreeNode[],
+  tree: KeyValueObject,
   ids: number[],
   options: DeleteOptions = DEFAULT_OPTIONS,
-): (TreeNode | null)[] {
+) {
   const {
     idKey = DEFAULT_ID_KEY,
     childrenKey = DEFAULT_CHILDREN_KEY,
@@ -18,12 +22,12 @@ export function deleteNodesByIds(
   } = options;
 
   const idsToDelete = new Set(ids);
-  const newTree: TreeNode[] = _.cloneDeep(tree); // Create a new tree object (创建新的tree对象)
-  const queue: TreeNode[] = [...newTree];
-  const parents: { [key: string]: TreeNode | null } = {};
+  const newTree: KeyValueObject = _.cloneDeep(tree); // Create a new tree object (创建新的tree对象)
+  const queue: KeyValueObject[] = [newTree];
+  const parents: { [key: string]: KeyValueObject | null } = {};
 
   while (!_.isEmpty(queue)) {
-    const node = queue.shift() as TreeNode;
+    const node = queue.shift() as KeyValueObject;
 
     if (idsToDelete.has(node[idKey])) {
       if (deleteSelf) {
@@ -39,7 +43,7 @@ export function deleteNodesByIds(
         node[childrenKey] = [];
       }
     } else {
-      const children = node[childrenKey] as TreeNode[];
+      const children = node[childrenKey] as KeyValueObject[];
       if (children) {
         for (const child of children) {
           parents[child[idKey]] = node;
@@ -50,7 +54,7 @@ export function deleteNodesByIds(
   }
   for (const parent of Object.values(parents)) {
     if (parent && parent.toBeDeletedChildren) {
-      _.remove(parent[childrenKey], (child: TreeNode) =>
+      _.remove(parent[childrenKey], (child: KeyValueObject) =>
         parent.toBeDeletedChildren.includes(child[idKey]),
       );
       delete parent.toBeDeletedChildren;
@@ -58,10 +62,10 @@ export function deleteNodesByIds(
   }
 
   if (isDeleteEmptyChildren) {
-    const queue: TreeNode[] = [...newTree];
+    const queue: KeyValueObject[] = [newTree];
     while (!_.isEmpty(queue)) {
-      const node = queue.shift() as TreeNode;
-      const children = node[childrenKey] as TreeNode[];
+      const node = queue.shift() as KeyValueObject;
+      const children = node[childrenKey] as KeyValueObject[];
       if (children) {
         if (children.length === 0) {
           delete node[childrenKey];
@@ -72,15 +76,15 @@ export function deleteNodesByIds(
     }
   }
 
-  return _.remove(newTree, (node) => !idsToDelete.has(node[idKey]));
+  return newTree;
 }
 
 // 删除树节点的函数，通过删除函数
 export function deleteNodes(
-  tree: TreeNode[],
-  deleteFunction: (node: TreeNode) => boolean,
+  tree: KeyValueObject,
+  deleteFunction: (node: KeyValueObject) => boolean,
   options: DeleteOptions = DEFAULT_OPTIONS,
-): TreeNode[] {
+) {
   const {
     idKey = DEFAULT_ID_KEY,
     childrenKey = DEFAULT_CHILDREN_KEY,
@@ -88,12 +92,12 @@ export function deleteNodes(
     isDeleteEmptyChildren = false,
   } = options;
 
-  const newTree: TreeNode[] = _.cloneDeep(tree); // 创建新的tree对象
-  const queue: TreeNode[] = [...newTree];
-  const parents: { [key: string]: TreeNode | null } = {};
+  const newTree: KeyValueObject = _.cloneDeep(tree); // 创建新的tree对象
+  const queue: KeyValueObject[] = [newTree];
+  const parents: { [key: string]: KeyValueObject | null } = {};
 
   while (!_.isEmpty(queue)) {
-    const node = queue.shift() as TreeNode;
+    const node = queue.shift() as KeyValueObject;
 
     if (deleteFunction(node)) {
       if (deleteSelf) {
@@ -106,7 +110,7 @@ export function deleteNodes(
         }
       }
     } else {
-      const children = node[childrenKey] as TreeNode[];
+      const children = node[childrenKey] as KeyValueObject[];
       if (children) {
         for (const child of children) {
           parents[child[idKey]] = node;
@@ -118,7 +122,7 @@ export function deleteNodes(
 
   for (const parent of Object.values(parents)) {
     if (parent && parent.toBeDeletedChildren) {
-      _.remove(parent[childrenKey], (child: TreeNode) =>
+      _.remove(parent[childrenKey], (child: KeyValueObject) =>
         parent.toBeDeletedChildren.includes(child[idKey]),
       );
       delete parent.toBeDeletedChildren;
@@ -133,7 +137,7 @@ export function deleteNodes(
     }
   }
 
-  return _.remove(newTree, (node) => !deleteFunction(node));
+  return newTree;
 }
 
 // TODO:将两个函数的公共部分提取出来，以减少代码重复。此外，我们也可以考虑添加一些错误处理和边界条件检查，以提高代码的健壮性。
