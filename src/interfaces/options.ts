@@ -27,13 +27,38 @@ export interface TreeToDataOptions
   traversalMethod?: TraversalMethod;
 }
 
+export interface TreeDimensionsOptions
+  extends Omit<DefaultOptions, "idKek" | "parentIdKey"> {}
+
 export interface DataToTreeOptions extends DefaultOptions {}
 export interface InsertOptions extends Omit<DefaultOptions, "parentIdKey"> {}
 export interface ModifyOptions extends Omit<DefaultOptions, "parentIdKey"> {}
+export interface PathOptions extends Omit<DefaultOptions, "parentIdKey"> {}
 
 export interface CreateMapOptions extends DefaultOptions {}
 
 export interface DeleteOptions extends Omit<DefaultOptions, "parentIdKey"> {
-  isDeleteEmptyChildren?: boolean; // Determine whether to delete empty children arrays (确定是否删除空的子元素数组)
+  /**
+   * 是否删除空的子元素数组，默认为false
+   */
+  isDeleteEmptyChildren?: boolean;
+  /**
+   * 是否删除自己，默认为true
+   */
   deleteSelf?: boolean; // Determine whether to delete itself (确定是否删除自己)
+}
+
+export interface GetParentNodeByIdOptions extends PathOptions {
+  /**
+   * 向上查找的级数，默认值为1
+   */
+  levelsUp?: number;
+  /**
+   * 如果没有找到指定级别的父节点，是否返回根节点，默认值为false
+   */
+  returnRootIfAbsent?: boolean;
+  /**
+   * 是否返回的父节点对象是否包含其子节点，默认值为false
+   */
+  includeChildren?: boolean;
 }

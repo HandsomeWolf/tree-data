@@ -8,7 +8,7 @@
     "strict": true,
     "skipLibCheck": true,
     "baseUrl": "./",
-    "lib": ["es2021", "dom"]
+    "lib": ["es2022", "dom"]
   },
   "exclude": ["./dist", "./example", "./tests"]
 }

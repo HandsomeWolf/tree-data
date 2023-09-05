@@ -42,6 +42,7 @@ describe("getNodePathById", () => {
         { id: 5, children: [{ id: 6 }] },
         { id: 6 },
       ];
+
       expect(getNodePathById(tree, 6)).toEqual(expected);
     });
     it("should return null if the target node is not found", () => {

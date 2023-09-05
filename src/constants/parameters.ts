@@ -17,11 +17,6 @@ export const DEFAULT_OPTIONS = {
   idKey: DEFAULT_ID_KEY,
 };
 
-// to-tree
-export const DATA_TO_TREE_OPTIONS = {
-  ...DEFAULT_OPTIONS,
-};
-
 // to-data
 export const TREE_TO_DATA_OPTIONS = {
   childrenKey: DEFAULT_CHILDREN_KEY,
@@ -31,4 +26,11 @@ export const DELETED_OPTIONS = {
   ...DEFAULT_OPTIONS,
   isDeleteEmptyChildren: false,
   deleteSelf: true,
+};
+
+export const PARENTNODEBYID_OPTIONS = {
+  ...DEFAULT_OPTIONS,
+  levelsUp: 1,
+  returnRootIfAbsent: false,
+  includeChildren: false,
 };
