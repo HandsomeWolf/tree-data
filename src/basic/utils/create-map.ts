@@ -4,11 +4,12 @@ import {
   DEFAULT_ID_KEY,
   DEFAULT_OPTIONS,
 } from "../../constants/parameters";
+import { type CreateMapOptions } from "../../interfaces/options";
 
 // 创建节点映射 (Create node mapping)
 export function createMap(
   tree: TreeNode[],
-  options: DefaultOptions = DEFAULT_OPTIONS,
+  options: CreateMapOptions = DEFAULT_OPTIONS,
 ): Map<number | string, TreeNode> {
   const { childrenKey = DEFAULT_CHILDREN_KEY, idKey = DEFAULT_ID_KEY } =
     options;
