@@ -23,16 +23,15 @@ treeToData(tree, options)
 ```TypeScript
 import { treeToData } from "@handsomewolf/tree-data";
 
-const tree = [
-  {
-    id: 1,
-    parentId: null,
-    children: [
-      { id: 2, parentId: 1, children: [{ id: 4, parentId: 2 }] },
-      { id: 3, parentId: 1 },
-    ],
-  },
-];
+const tree = {
+  id: 1,
+  parentId: null,
+  children: [
+    { id: 2, parentId: 1, children: [{ id: 4, parentId: 2 }] },
+    { id: 3, parentId: 1 },
+  ],
+}
+
 
 const result = treeToData(tree);
 console.log(result);
@@ -50,20 +49,19 @@ console.log(result);
 ```TypeScript
 import { treeToData } from "@handsomewolf/tree-data";
 
-const tree = [
-  {
-    myId: 1,
-    myParentId: null,
-    customChildren: [
-      {
-        myId: 2,
-        myParentId: 1,
-        customChildren: [{ myId: 4, myParentId: 2 }],
-      },
-      { myId: 3, myParentId: 1 },
-    ],
-  },
-];
+const tree = {
+  myId: 1,
+  myParentId: null,
+  customChildren: [
+    {
+      myId: 2,
+      myParentId: 1,
+      customChildren: [{ myId: 4, myParentId: 2 }],
+    },
+    { myId: 3, myParentId: 1 },
+  ],
+}
+
 
 const result = treeToData(tree, { childrenKey: "customChildren" })
 console.log(result)
@@ -82,16 +80,15 @@ console.log(result)
 ```TypeScript
 import { treeToData } from "@handsomewolf/tree-data";
 
-const tree = [
-  {
-    id: 1,
-    parentId: null,
-    children: [
-      { id: 2, parentId: 1, children: [{ id: 4, parentId: 2 }] },
-      { id: 3, parentId: 1 },
-    ],
-  },
-];
+const tree = {
+  id: 1,
+  parentId: null,
+  children: [
+    { id: 2, parentId: 1, children: [{ id: 4, parentId: 2 }] },
+    { id: 3, parentId: 1 },
+  ],
+}
+
 
 const result = treeToData(tree, {method: "DFS"});
 console.log(result);

@@ -16,7 +16,7 @@
   "homepage": "https://github.com/HandsomeWolf",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HandsomeWolf/data-transformer"
+    "url": "git+https://github.com/HandsomeWolf/tree-data"
   },
   "author": "HandsomeWolf <55856773@qq.com> (https://github.com/handsomewolf)",
   "main": "./dist/index.cjs",
