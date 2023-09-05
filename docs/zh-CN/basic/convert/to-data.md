@@ -93,7 +93,7 @@ const tree = [
   },
 ];
 
-const result = treeToData(tree);
+const result = treeToData(tree, {method: "DFS"});
 console.log(result);
 
 // 输出：
