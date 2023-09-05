@@ -1,11 +1,15 @@
 import {
+  type KeyValueObject,
+  type TreeDimensionsOptions,
+} from "../../interfaces/options";
+import {
   DEFAULT_CHILDREN_KEY,
   DEFAULT_OPTIONS,
 } from "../../constants/parameters";
 
 export function getTreeDimensions(
-  tree: TreeNode[],
-  options: DefaultOptions = DEFAULT_OPTIONS,
+  tree: KeyValueObject,
+  options: TreeDimensionsOptions = DEFAULT_OPTIONS,
 ): { depth: number; width: number } {
   const { childrenKey = DEFAULT_CHILDREN_KEY } = options;
 
@@ -13,8 +17,11 @@ export function getTreeDimensions(
   let maxWidth = 0;
 
   // 使用队列来实现 BFS (Use a queue to implement BFS)
-  const queue: TreeNode[] = [...tree];
+  const queue: KeyValueObject[] = [];
 
+  if (Object.keys(tree).length > 0) {
+    queue.push(tree);
+  }
   while (queue.length > 0) {
     const levelSize = queue.length;
     maxWidth = Math.max(maxWidth, levelSize);
