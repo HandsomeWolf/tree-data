@@ -1,3 +1,8 @@
+import _ from "lodash";
+import {
+  type DataToTreeOptions,
+  type KeyValueObject,
+} from "../../interfaces/options";
 import {
   DEFAULT_CHILDREN_KEY,
   DEFAULT_OPTIONS,
@@ -7,19 +12,21 @@ import { createMap } from "../utils/create-map";
 
 // Convert data to tree structure (数据转树形结构)
 export function dataToTree(
-  data: TreeNode[],
-  options: DefaultOptions = DEFAULT_OPTIONS,
-): TreeNode[] {
+  data: KeyValueObject[],
+  options: DataToTreeOptions = DEFAULT_OPTIONS,
+) {
   const {
     parentIdKey = DEFAULT_PARENT_ID_KEY,
     childrenKey = DEFAULT_CHILDREN_KEY,
   } = options;
 
-  const tree: TreeNode[] = [];
-  // Use createMap to create a map (使用 createMap 创建映射)
-  const nodeMap = createMap(data, options);
+  const newData = _.cloneDeep(data);
+  const tree: KeyValueObject[] = [];
 
-  for (const datum of data) {
+  // Use createMap to create a map (使用 createMap 创建映射)
+  const nodeMap = createMap(newData, options);
+
+  for (const datum of newData) {
     const parentId = datum[parentIdKey];
     if (parentId) {
       // Get the parent node from the map (从映射中获取父节点)
@@ -38,5 +45,5 @@ export function dataToTree(
     }
   }
 
-  return tree;
+  return tree.length <= 1 ? tree[0] : tree;
 }
