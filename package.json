@@ -1,6 +1,6 @@
 {
   "name": "@handsomewolf/tree-data",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "description": "Data conversion, tree node manipulation, query and tree traversal, etc.",
   "keywords": [
     "data transformation",
