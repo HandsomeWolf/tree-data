@@ -32,6 +32,7 @@ export class TreeData {
     prefix: string = "",
     isLast: boolean = true,
   ): void {
+    // eslint-disable-next-line no-console
     console.log(prefix + (isLast ? "└── " : "├── ") + node.value);
 
     const childPrefix = prefix + (isLast ? "    " : "│   ");
