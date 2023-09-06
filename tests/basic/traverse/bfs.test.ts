@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { traverseBFS, traverseDFS } from "../../../src/index";
+import { TreeData } from "../../../src/index";
+
 describe("Tree Traversal", () => {
   const tree = [
     {
@@ -21,13 +22,13 @@ describe("Tree Traversal", () => {
 
   it("should traverse tree in depth-first order", () => {
     const result: number[] = [];
-    traverseDFS(tree, (node) => result.push(node.id));
+    TreeData.traverseDFS(tree, (node) => result.push(node.id));
     expect(result).toEqual([1, 2, 4, 5, 6, 3]);
   });
 
   it("should traverse tree in breadth-first order", () => {
     const result: number[] = [];
-    traverseBFS(tree, (node) => result.push(node.id));
+    TreeData.traverseBFS(tree, (node) => result.push(node.id));
     expect(result).toEqual([1, 2, 3, 4, 5, 6]);
   });
 });

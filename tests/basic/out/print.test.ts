@@ -1,6 +1,16 @@
 import { describe, expect, it,vi } from "vitest";
-import {printTree } from "../../../src/index";
+import {TreeData} from "../../../src/index";
 describe('printTree', () => {
+  it('look',()=>{
+    const tree = {
+      value: 'root',
+      children: [
+        { value: 'child1', children: [{ value: 'grandchild', children: [{ value: 'grandchild', children: [{ value: 'grandchild', children: [{ value: 'grandchild', children: [{ value: 'grandchild' }] },{ value: 'grandchild' },{ value: 'grandchild' }] }] }] }] },
+        { value: 'child2', children: [{ value: 'grandchild' }] },
+      ],
+    }
+    TreeData.printTree(tree)
+  })
   it('should print tree correctly', () => {
     const mockConsole = vi.spyOn(console, 'log').mockImplementation(() => {})
     const tree = {
@@ -12,7 +22,7 @@ describe('printTree', () => {
     }
 
 
-    printTree(tree)
+    TreeData.printTree(tree)
 
     expect(mockConsole).toHaveBeenCalledWith('└── root')
     expect(mockConsole).toHaveBeenCalledWith('    ├── child1')

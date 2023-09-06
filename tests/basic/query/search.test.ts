@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { getNodes } from "../../../src/index";
-
+import { TreeData } from "../../../src/index";
+let treeData: TreeData;
 describe("getNodes", () => {
   const tree = [
     {
@@ -24,22 +24,38 @@ describe("getNodes", () => {
       ],
     },
     {
-      id: 5,
+      id: 10,
+      name: "one",
+      children: [
+        {
+          id: 20,
+          name: "two",
+          children: [
+            {
+              id: 30,
+              name: "three",
+            },
+          ],
+        },
+        {
+          id: 40,
+          name: "four",
+        },
+      ],
     },
   ];
+  treeData = new TreeData(tree);
   describe("basic", () => {
     it("findAll -> false ; includeChildren -> true ", () => {
-      const node = getNodes(
-        tree,
-        { id: 2 },
-        { findAll: false, includeChildren: true },
-      );
+      const node = treeData
+        .getNodes({ id: 20 }, { findAll: false, includeChildren: true })
+        .getResult();
       expect(node).toEqual({
-        id: 2,
+        id: 20,
         name: "two",
         children: [
           {
-            id: 3,
+            id: 30,
             name: "three",
           },
         ],
@@ -47,26 +63,24 @@ describe("getNodes", () => {
     });
 
     it("findAll -> false ; includeChildren -> false", () => {
-      const node = getNodes(tree, { id: 2 });
+      const node = treeData.getNodes({ id: 20 }).getResult();
       expect(node).toEqual({
-        id: 2,
+        id: 20,
         name: "two",
       });
     });
 
     it("findAll -> true ; includeChildren -> true", () => {
-      const nodes = getNodes(
-        tree,
-        { id: 2 },
-        { findAll: true, includeChildren: true },
-      );
+      const nodes = treeData
+        .getNodes({ id: 20 }, { findAll: true, includeChildren: true })
+        .getResult();
       expect(nodes).toEqual([
         {
-          id: 2,
+          id: 20,
           name: "two",
           children: [
             {
-              id: 3,
+              id: 30,
               name: "three",
             },
           ],
@@ -116,12 +130,13 @@ describe("getNodes", () => {
           name: "two",
         },
       ];
-
-      const nodes = getNodes(
-        tree,
-        { id: 2 },
-        { findAll: true, includeChildren: true, childrenKey: "myChildren" },
-      );
+      treeData = new TreeData(tree);
+      const nodes = treeData
+        .getNodes(
+          { id: 2 },
+          { findAll: true, includeChildren: true, childrenKey: "myChildren" },
+        )
+        .getResult();
       expect(nodes).toEqual([
         { id: 2, name: "two" },
         {
@@ -143,7 +158,7 @@ describe("getNodes", () => {
   });
 
   it("should return null if no nodes match the condition", () => {
-    const node = getNodes(tree, { id: 100 }, { findAll: false });
+    const node = treeData.getNodes({ id: 100 }, { findAll: false }).getResult();
     expect(node).toBeNull();
   });
 });

@@ -1,7 +1,11 @@
-import { describe, expect, it } from "vitest";
-import { dataToTree } from "../../../src/index";
+import { beforeEach, describe, expect, it } from "vitest";
+import { TreeData } from "../../../src/index";
 
 describe("dataToTree", () => {
+  let treeData: TreeData;
+  beforeEach(() => {
+    treeData = new TreeData();
+  });
   describe("basic", () => {
     it("normal", () => {
       const data = [
@@ -21,7 +25,7 @@ describe("dataToTree", () => {
         },
       ];
 
-      expect(dataToTree(data)).toEqual(expected);
+      expect(treeData.dataToTree(data).getResult()).toEqual(expected);
     });
     it("deep", () => {
       const data = [
@@ -86,7 +90,7 @@ describe("dataToTree", () => {
           ],
         },
       ];
-      expect(dataToTree(data)).toEqual(expected);
+      expect(treeData.dataToTree(data).getResult()).toEqual(expected);
     });
     it("many", () => {
       const data = [
@@ -130,7 +134,7 @@ describe("dataToTree", () => {
         },
       ];
 
-      expect(dataToTree(data)).toEqual(expected);
+      expect(treeData.dataToTree(data).getResult()).toEqual(expected);
     });
   });
 
@@ -158,11 +162,13 @@ describe("dataToTree", () => {
         },
       ];
       expect(
-        dataToTree(data, {
-          idKey: "myId",
-          parentIdKey: "myParentId",
-          childrenKey: "customChildren",
-        }),
+        treeData
+          .dataToTree(data, {
+            idKey: "myId",
+            parentIdKey: "myParentId",
+            childrenKey: "customChildren",
+          })
+          .getResult(),
       ).toEqual(expected);
     });
     it("deep", () => {
@@ -230,11 +236,13 @@ describe("dataToTree", () => {
       ];
 
       expect(
-        dataToTree(data, {
-          idKey: "myId",
-          parentIdKey: "myParentId",
-          childrenKey: "myChildren",
-        }),
+        treeData
+          .dataToTree(data, {
+            idKey: "myId",
+            parentIdKey: "myParentId",
+            childrenKey: "myChildren",
+          })
+          .getResult(),
       ).toEqual(expected);
     });
   });
@@ -243,13 +251,13 @@ describe("dataToTree", () => {
     it("empty array", () => {
       const data = [];
       const expected = [];
-      expect(dataToTree(data)).toEqual(expected);
+      expect(treeData.dataToTree(data).getResult()).toEqual(expected);
     });
 
     it("array with one element", () => {
       const data = [{ id: 1, parentId: null }];
       const expected = [{ id: 1, parentId: null }];
-      expect(dataToTree(data)).toEqual(expected);
+      expect(treeData.dataToTree(data).getResult()).toEqual(expected);
     });
   });
 

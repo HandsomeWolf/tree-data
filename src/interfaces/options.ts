@@ -28,7 +28,9 @@ export interface TreeToDataOptions
 }
 
 export interface TreeDimensionsOptions
-  extends Omit<DefaultOptions, "idKek" | "parentIdKey"> {}
+  extends Omit<DefaultOptions, "idKek" | "parentIdKey"> {
+  index?: number;
+}
 
 export interface DataToTreeOptions extends DefaultOptions {}
 export interface InsertOptions extends Omit<DefaultOptions, "parentIdKey"> {}

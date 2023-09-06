@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { modifyNodes, modifyNodesByIds } from "../../../src/index";
+import { TreeData } from "../../../src/index";
+let treeData: TreeData;
 interface TreeNode {
   [key: string]: any;
 }
@@ -16,11 +17,13 @@ describe("modifyNodes", () => {
           children: [{ id: 2 }],
         },
       ];
-
-      const modifiedTree = modifyNodes(tree, (node) => {
-        node.newKey = "newValue";
-        return node;
-      });
+      treeData = new TreeData(tree);
+      const modifiedTree = treeData
+        .modifyNodes((node) => {
+          node.newKey = "newValue";
+          return node;
+        })
+        .getResult();
 
       expect(modifiedTree).toEqual([
         {
@@ -53,11 +56,13 @@ describe("modifyNodes", () => {
           ],
         },
       ];
-
-      const modifiedTree = modifyNodes(tree, (node) => {
-        node.newKey = "newValue";
-        return node;
-      });
+      treeData = new TreeData(tree);
+      const modifiedTree = treeData
+        .modifyNodes((node) => {
+          node.newKey = "newValue";
+          return node;
+        })
+        .getResult();
 
       expect(modifiedTree).toEqual([
         {
@@ -116,19 +121,20 @@ describe("modifyNodes", () => {
         { id: 2, value: "node2", children: [] },
         { id: 3, value: "node3", children: [] },
       ];
-
-      const newTree = modifyNodes(
-        tree,
-        (node) => {
-          if (node.id === 1 || node.id === 6) {
-            node.newKey = "newValue";
-          }
-          return node;
-        },
-        {
-          childrenKey: "children",
-        },
-      );
+      treeData = new TreeData(tree);
+      const newTree = treeData
+        .modifyNodes(
+          (node) => {
+            if (node.id === 1 || node.id === 6) {
+              node.newKey = "newValue";
+            }
+            return node;
+          },
+          {
+            childrenKey: "children",
+          },
+        )
+        .getResult();
 
       expect(newTree).toEqual([
         {
@@ -165,17 +171,18 @@ describe("modifyNodes", () => {
           myChildren: [{ myId: 2 }],
         },
       ];
-
-      const newTree = modifyNodes(
-        tree,
-        (node) => {
-          node.newKey = "newValue";
-          return node;
-        },
-        {
-          childrenKey: "myChildren",
-        },
-      );
+      treeData = new TreeData(tree);
+      const newTree = treeData
+        .modifyNodes(
+          (node) => {
+            node.newKey = "newValue";
+            return node;
+          },
+          {
+            childrenKey: "myChildren",
+          },
+        )
+        .getResult();
       expect(newTree).toEqual([
         {
           myId: 1,
@@ -208,17 +215,18 @@ describe("modifyNodes", () => {
         },
         { myId: 8, myChildren: [{ myId: 9 }] },
       ];
-
-      const newTree = modifyNodes(
-        tree,
-        (node) => {
-          node.newKey = "newValue";
-          return node;
-        },
-        {
-          childrenKey: "myChildren",
-        },
-      );
+      treeData = new TreeData(tree);
+      const newTree = treeData
+        .modifyNodes(
+          (node) => {
+            node.newKey = "newValue";
+            return node;
+          },
+          {
+            childrenKey: "myChildren",
+          },
+        )
+        .getResult();
 
       expect(newTree).toEqual([
         {
@@ -272,8 +280,10 @@ describe("modifyNodesByIds", () => {
 
       const ids = [1, 3];
       const keyValuePairs = { value: "modified" };
-
-      const modifiedTree = modifyNodesByIds(tree, ids, keyValuePairs);
+      treeData = new TreeData(tree);
+      const modifiedTree = treeData
+        .modifyNodesByIds(ids, keyValuePairs)
+        .getResult();
 
       expect(modifiedTree).toEqual([
         { id: 1, value: "modified", children: [] },
@@ -312,8 +322,10 @@ describe("modifyNodesByIds", () => {
 
       const ids = [1, 6];
       const keyValuePairs = { value: "modified" };
-
-      const modifiedTree = modifyNodesByIds(tree, ids, keyValuePairs);
+      treeData = new TreeData(tree);
+      const modifiedTree = treeData
+        .modifyNodesByIds(ids, keyValuePairs)
+        .getResult();
 
       expect(modifiedTree).toEqual([
         {
@@ -348,11 +360,13 @@ describe("modifyNodesByIds", () => {
 
       const ids = [1, 3];
       const keyValuePairs = { value: "modified" };
-
-      const modifiedTree = modifyNodesByIds(tree, ids, keyValuePairs, {
-        idKey: "myId",
-        childrenKey: "myChildren",
-      });
+      treeData = new TreeData(tree);
+      const modifiedTree = treeData
+        .modifyNodesByIds(ids, keyValuePairs, {
+          idKey: "myId",
+          childrenKey: "myChildren",
+        })
+        .getResult();
 
       expect(modifiedTree).toEqual([
         { myId: 1, value: "modified", myChildren: [] },
@@ -391,11 +405,13 @@ describe("modifyNodesByIds", () => {
 
       const ids = [1, 6];
       const keyValuePairs = { value: "modified" };
-
-      const modifiedTree = modifyNodesByIds(tree, ids, keyValuePairs, {
-        idKey: "myId",
-        childrenKey: "myChildren",
-      });
+      treeData = new TreeData(tree);
+      const modifiedTree = treeData
+        .modifyNodesByIds(ids, keyValuePairs, {
+          idKey: "myId",
+          childrenKey: "myChildren",
+        })
+        .getResult();
 
       expect(modifiedTree).toEqual([
         {

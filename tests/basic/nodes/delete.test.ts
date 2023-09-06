@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { deleteNodes, deleteNodesByIds } from "../../../src/index";
+import { TreeData } from "../../../src/index";
 
+let treeData: TreeData;
 describe("deleteNodesByIds", () => {
   describe("basic", () => {
     it("normal", () => {
@@ -45,8 +46,10 @@ describe("deleteNodesByIds", () => {
         { id: 1, children: [] },
         { id: 1, children: [] },
       ];
-
-      expect(deleteNodesByIds(tree, idsToDelete)).toEqual(expected);
+      treeData = new TreeData(tree);
+      expect(treeData.deleteNodesByIds(idsToDelete).getResult()).toEqual(
+        expected,
+      );
     });
     it("deep", () => {
       const tree = [
@@ -112,8 +115,10 @@ describe("deleteNodesByIds", () => {
           ],
         },
       ];
-
-      expect(deleteNodesByIds(tree, idsToDelete)).toEqual(expected);
+      treeData = new TreeData(tree);
+      expect(treeData.deleteNodesByIds(idsToDelete).getResult()).toEqual(
+        expected,
+      );
     });
     it("normal isDeleteEmptyChildren -> true", () => {
       const tree = [
@@ -138,9 +143,11 @@ describe("deleteNodesByIds", () => {
       const idsToDelete = [2, 4];
 
       const expected = [{ id: 1 }];
-
+      treeData = new TreeData(tree);
       expect(
-        deleteNodesByIds(tree, idsToDelete, { isDeleteEmptyChildren: true }),
+        treeData
+          .deleteNodesByIds(idsToDelete, { isDeleteEmptyChildren: true })
+          .getResult(),
       ).toEqual(expected);
     });
     it("deep isDeleteEmptyChildren -> true", () => {
@@ -203,9 +210,13 @@ describe("deleteNodesByIds", () => {
           ],
         },
       ];
-
+      treeData = new TreeData(tree);
       expect(
-        deleteNodesByIds(tree, idsToDelete, { isDeleteEmptyChildren: true }),
+        treeData
+          .deleteNodesByIds(idsToDelete, {
+            isDeleteEmptyChildren: true,
+          })
+          .getResult(),
       ).toEqual(expected);
     });
     it("deep isDeleteEmptyChildren -> true and deleteSelf -> false", () => {
@@ -275,12 +286,14 @@ describe("deleteNodesByIds", () => {
           ],
         },
       ];
-
+      treeData = new TreeData(tree);
       expect(
-        deleteNodesByIds(tree, idsToDelete, {
-          isDeleteEmptyChildren: true,
-          deleteSelf: false,
-        }),
+        treeData
+          .deleteNodesByIds(idsToDelete, {
+            isDeleteEmptyChildren: true,
+            deleteSelf: false,
+          })
+          .getResult(),
       ).toEqual(expected);
     });
     it("deep isDeleteEmptyChildren -> false and deleteSelf -> true", () => {
@@ -340,12 +353,14 @@ describe("deleteNodesByIds", () => {
           ],
         },
       ];
-
+      treeData = new TreeData(tree);
       expect(
-        deleteNodesByIds(tree, idsToDelete, {
-          isDeleteEmptyChildren: false,
-          deleteSelf: true,
-        }),
+        treeData
+          .deleteNodesByIds(idsToDelete, {
+            isDeleteEmptyChildren: false,
+            deleteSelf: true,
+          })
+          .getResult(),
       ).toEqual(expected);
     });
   });
@@ -406,12 +421,14 @@ describe("deleteNodesByIds", () => {
           ],
         },
       ];
-
+      treeData = new TreeData(tree);
       expect(
-        deleteNodesByIds(tree, idsToDelete, {
-          childrenKey: "myChildren",
-          idKey: "myId",
-        }),
+        treeData
+          .deleteNodesByIds(idsToDelete, {
+            childrenKey: "myChildren",
+            idKey: "myId",
+          })
+          .getResult(),
       ).toEqual(expected);
     });
     it("deep", () => {
@@ -478,11 +495,15 @@ describe("deleteNodesByIds", () => {
           ],
         },
       ];
+
+      treeData = new TreeData(tree);
       expect(
-        deleteNodesByIds(tree, idsToDelete, {
-          childrenKey: "myChildren",
-          idKey: "myId",
-        }),
+        treeData
+          .deleteNodesByIds(idsToDelete, {
+            childrenKey: "myChildren",
+            idKey: "myId",
+          })
+          .getResult(),
       ).toEqual(expected);
     });
     it("normal isDeleteEmptyChildren -> true", () => {
@@ -540,13 +561,15 @@ describe("deleteNodesByIds", () => {
           ],
         },
       ];
-
+      treeData = new TreeData(tree);
       expect(
-        deleteNodesByIds(tree, idsToDelete, {
-          childrenKey: "myChildren",
-          idKey: "myId",
-          isDeleteEmptyChildren: true,
-        }),
+        treeData
+          .deleteNodesByIds(idsToDelete, {
+            childrenKey: "myChildren",
+            idKey: "myId",
+            isDeleteEmptyChildren: true,
+          })
+          .getResult(),
       ).toEqual(expected);
     });
     it("deep isDeleteEmptyChildren -> true", () => {
@@ -609,12 +632,15 @@ describe("deleteNodesByIds", () => {
           ],
         },
       ];
+      treeData = new TreeData(tree);
       expect(
-        deleteNodesByIds(tree, idsToDelete, {
-          childrenKey: "myChildren",
-          idKey: "myId",
-          isDeleteEmptyChildren: true,
-        }),
+        treeData
+          .deleteNodesByIds(idsToDelete, {
+            childrenKey: "myChildren",
+            idKey: "myId",
+            isDeleteEmptyChildren: true,
+          })
+          .getResult(),
       ).toEqual(expected);
     });
     it("deep isDeleteEmptyChildren -> true or deleteSelf -> false", () => {
@@ -684,14 +710,16 @@ describe("deleteNodesByIds", () => {
           ],
         },
       ];
-
+      treeData = new TreeData(tree);
       expect(
-        deleteNodesByIds(tree, idsToDelete, {
-          isDeleteEmptyChildren: true,
-          deleteSelf: false,
-          childrenKey: "myChildren",
-          idKey: "myId",
-        }),
+        treeData
+          .deleteNodesByIds(idsToDelete, {
+            isDeleteEmptyChildren: true,
+            deleteSelf: false,
+            childrenKey: "myChildren",
+            idKey: "myId",
+          })
+          .getResult(),
       ).toEqual(expected);
     });
     it("deep isDeleteEmptyChildren -> false or deleteSelf -> true", () => {
@@ -752,13 +780,16 @@ describe("deleteNodesByIds", () => {
         },
       ];
 
+      treeData = new TreeData(tree);
       expect(
-        deleteNodesByIds(tree, idsToDelete, {
-          isDeleteEmptyChildren: false,
-          deleteSelf: true,
-          childrenKey: "myChildren",
-          idKey: "myId",
-        }),
+        treeData
+          .deleteNodesByIds(idsToDelete, {
+            isDeleteEmptyChildren: false,
+            deleteSelf: true,
+            childrenKey: "myChildren",
+            idKey: "myId",
+          })
+          .getResult(),
       ).toEqual(expected);
     });
   });
@@ -777,10 +808,10 @@ describe("deleteNodes", () => {
           children: [{ id: 2, children: [{ id: 3 }, { id: 4 }] }, { id: 5 }],
         },
       ];
-      const result = deleteNodes(
-        tree,
-        (node) => node.id === 2 || node.id === 3,
-      );
+      treeData = new TreeData(tree);
+      const result = treeData
+        .deleteNodes((node) => node.id === 2 || node.id === 3)
+        .getResult();
       expect(result).toEqual([
         {
           id: 1,
@@ -837,10 +868,10 @@ describe("deleteNodes", () => {
           ],
         },
       ];
-      const result = deleteNodes(
-        tree,
-        (node) => node.id === 5 || node.id === 10,
-      );
+      treeData = new TreeData(tree);
+      const result = treeData
+        .deleteNodes((node) => node.id === 5 || node.id === 10)
+        .getResult();
       const expected = [
         {
           id: 1,
@@ -905,13 +936,12 @@ describe("deleteNodes", () => {
           ],
         },
       ];
-      const result = deleteNodes(
-        tree,
-        (node) => node.id === 5 || node.id === 10,
-        {
+      treeData = new TreeData(tree);
+      const result = treeData
+        .deleteNodes((node) => node.id === 5 || node.id === 10, {
           isDeleteEmptyChildren: true,
-        },
-      );
+        })
+        .getResult();
       const expected = [
         {
           id: 1,
@@ -972,13 +1002,13 @@ describe("deleteNodes", () => {
           ],
         },
       ];
-      const result = deleteNodes(
-        tree,
-        (node) => node.id === 5 || node.id === 9,
-        {
+
+      treeData = new TreeData(tree);
+      const result = treeData
+        .deleteNodes((node) => node.id === 5 || node.id === 9, {
           isDeleteEmptyChildren: true,
-        },
-      );
+        })
+        .getResult();
       const expected = [
         {
           id: 1,

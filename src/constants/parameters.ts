@@ -34,3 +34,8 @@ export const PARENTNODEBYID_OPTIONS = {
   returnRootIfAbsent: false,
   includeChildren: false,
 };
+
+export const TREEDIMENSIONS__OPTIONS = {
+  ...DEFAULT_OPTIONS,
+  index: undefined,
+};

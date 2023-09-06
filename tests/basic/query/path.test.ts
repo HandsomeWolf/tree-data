@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { getNodePathById } from "../../../src/index";
+import { TreeData } from "../../../src/index";
 
+let treeData: TreeData;
 describe("getNodePathById", () => {
   describe("basic", () => {
     it("normal", () => {
@@ -18,6 +19,21 @@ describe("getNodePathById", () => {
               ],
             },
             { id: 3 },
+          ],
+        },
+        {
+          id: 10,
+          children: [
+            {
+              id: 20,
+              children: [
+                {
+                  id: 40,
+                  children: [{ id: 50, children: [{ id: 60 }] }],
+                },
+              ],
+            },
+            { id: 30 },
           ],
         },
       ];
@@ -42,8 +58,9 @@ describe("getNodePathById", () => {
         { id: 5, children: [{ id: 6 }] },
         { id: 6 },
       ];
+      treeData = new TreeData(tree);
 
-      expect(getNodePathById(tree, 6)).toEqual(expected);
+      expect(treeData.getNodePathById(6)).toEqual(expected);
     });
     it("should return null if the target node is not found", () => {
       const tree = [
@@ -63,8 +80,8 @@ describe("getNodePathById", () => {
           ],
         },
       ];
-
-      expect(getNodePathById(tree, 7)).toBeNull();
+      treeData = new TreeData(tree);
+      expect(treeData.getNodePathById(7)).toBeNull();
     });
   });
   describe("custom", () => {
@@ -112,8 +129,9 @@ describe("getNodePathById", () => {
         { myId: 5, myChildren: [{ myId: 6 }] },
         { myId: 6 },
       ];
+      treeData = new TreeData(tree);
       expect(
-        getNodePathById(tree, 6, {
+        treeData.getNodePathById(6, {
           idKey: "myId",
           childrenKey: "myChildren",
         }),
@@ -137,8 +155,8 @@ describe("getNodePathById", () => {
           ],
         },
       ];
-
-      expect(getNodePathById(tree, 7)).toBeNull();
+      treeData = new TreeData(tree);
+      expect(treeData.getNodePathById(7)).toBeNull();
     });
   });
 });
