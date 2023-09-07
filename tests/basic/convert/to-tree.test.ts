@@ -161,15 +161,12 @@ describe("dataToTree", () => {
           ],
         },
       ];
-      expect(
-        treeData
-          .dataToTree(data, {
-            idKey: "myId",
-            parentIdKey: "myParentId",
-            childrenKey: "customChildren",
-          })
-          .getResult(),
-      ).toEqual(expected);
+      treeData = new TreeData([], {
+        idKey: "myId",
+        parentIdKey: "myParentId",
+        childrenKey: "customChildren",
+      });
+      expect(treeData.dataToTree(data).getResult()).toEqual(expected);
     });
     it("deep", () => {
       const data = [
@@ -234,16 +231,12 @@ describe("dataToTree", () => {
           ],
         },
       ];
-
-      expect(
-        treeData
-          .dataToTree(data, {
-            idKey: "myId",
-            parentIdKey: "myParentId",
-            childrenKey: "myChildren",
-          })
-          .getResult(),
-      ).toEqual(expected);
+      treeData = new TreeData([], {
+        idKey: "myId",
+        parentIdKey: "myParentId",
+        childrenKey: "myChildren",
+      });
+      expect(treeData.dataToTree(data).getResult()).toEqual(expected);
     });
   });
 

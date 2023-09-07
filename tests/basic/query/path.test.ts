@@ -129,13 +129,11 @@ describe("getNodePathById", () => {
         { myId: 5, myChildren: [{ myId: 6 }] },
         { myId: 6 },
       ];
-      treeData = new TreeData(tree);
-      expect(
-        treeData.getNodePathById(6, {
-          idKey: "myId",
-          childrenKey: "myChildren",
-        }),
-      ).toEqual(expected);
+      treeData = new TreeData(tree, {
+        idKey: "myId",
+        childrenKey: "myChildren",
+      });
+      expect(treeData.getNodePathById(6)).toEqual(expected);
     });
     it("should return null if the target node is not found", () => {
       const tree = [

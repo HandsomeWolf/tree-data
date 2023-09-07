@@ -17,25 +17,28 @@ describe("getParentNodeById", () => {
       ],
     },
   ];
-  treeData = new TreeData(tree);
+
   it("should return the parent node of the specified level", () => {
+    treeData = new TreeData(tree);
     const parentNode = treeData
       .getParentNodeById(3, { levelsUp: 1 })
       .getResult();
-    expect(parentNode).to.deep.equal({ id: 2, parentId: 1 });
+    expect(parentNode).to.deep.equal([{ id: 2, parentId: 1 }]);
   });
 
   it("should return the root node if the parent node of the specified level is not found", () => {
+    treeData = new TreeData(tree);
     const rootNode = treeData
       .getParentNodeById(3, {
         levelsUp: 5,
         returnRootIfAbsent: true,
       })
       .getResult();
-    expect(rootNode).to.deep.equal({ id: 1, parentId: null });
+    expect(rootNode).to.deep.equal([{ id: 1, parentId: null }]);
   });
 
   it("should return null if the parent node of the specified level is not found and returnRootIfAbsent is false", () => {
+    treeData = new TreeData(tree);
     const result = treeData
       .getParentNodeById(3, {
         levelsUp: 5,
@@ -46,6 +49,7 @@ describe("getParentNodeById", () => {
   });
 
   it("should include children in the returned node if includeChildren is true", () => {
+    treeData = new TreeData(tree);
     const parentNodeWithChildren = treeData
       .getParentNodeById(3, {
         levelsUp: 1,
@@ -54,10 +58,12 @@ describe("getParentNodeById", () => {
       })
       .getResult();
 
-    expect(parentNodeWithChildren).to.deep.equal({
-      id: 2,
-      parentId: 1,
-      children: [{ id: 3, parentId: 2 }],
-    });
+    expect(parentNodeWithChildren).to.deep.equal([
+      {
+        id: 2,
+        parentId: 1,
+        children: [{ id: 3, parentId: 2 }],
+      },
+    ]);
   });
 });

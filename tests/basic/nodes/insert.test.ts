@@ -148,15 +148,13 @@ describe("insertNodesByIds", () => {
           myChildren: [{ myId: 5 }],
         },
       ];
-      treeData = new TreeData(tree);
-      expect(
-        treeData
-          .insertNodesByIds([1], newNodes, {
-            childrenKey: "myChildren",
-            idKey: "myId",
-          })
-          .getResult(),
-      ).toEqual(expected);
+      treeData = new TreeData(tree, {
+        childrenKey: "myChildren",
+        idKey: "myId",
+      });
+      expect(treeData.insertNodesByIds([1], newNodes).getResult()).toEqual(
+        expected,
+      );
     });
     it("no children", () => {
       const tree = [
@@ -181,15 +179,13 @@ describe("insertNodesByIds", () => {
           myChildren: [{ myId: 5 }],
         },
       ];
-      treeData = new TreeData(tree);
-      expect(
-        treeData
-          .insertNodesByIds([1], newNodes, {
-            childrenKey: "myChildren",
-            idKey: "myId",
-          })
-          .getResult(),
-      ).toEqual(expected);
+      treeData = new TreeData(tree, {
+        childrenKey: "myChildren",
+        idKey: "myId",
+      });
+      expect(treeData.insertNodesByIds([1], newNodes).getResult()).toEqual(
+        expected,
+      );
     });
     it("no children and deep insert new nodes", () => {
       const tree = [
@@ -250,15 +246,13 @@ describe("insertNodesByIds", () => {
           ],
         },
       ];
-      treeData = new TreeData(tree);
-      expect(
-        treeData
-          .insertNodesByIds([5, 9], newNodes, {
-            childrenKey: "myChildren",
-            idKey: "myId",
-          })
-          .getResult(),
-      ).toEqual(expected);
+      treeData = new TreeData(tree, {
+        childrenKey: "myChildren",
+        idKey: "myId",
+      });
+      expect(treeData.insertNodesByIds([5, 9], newNodes).getResult()).toEqual(
+        expected,
+      );
     });
   });
 });
@@ -417,12 +411,12 @@ describe("insertNodes", () => {
         { myId: 4, name: "Node 4", myChildren: [] },
         { myId: 5, name: "Node 5", myChildren: [] },
       ];
-      treeData = new TreeData(tree);
+      treeData = new TreeData(tree, {
+        idKey: "myId",
+        childrenKey: "myChildren",
+      });
       const result = treeData
-        .insertNodes((node) => node.myId === 2, newNodes, {
-          idKey: "myId",
-          childrenKey: "myChildren",
-        })
+        .insertNodes((node) => node.myId === 2, newNodes)
         .getResult();
 
       expect(result).toEqual([
@@ -448,12 +442,12 @@ describe("insertNodes", () => {
         { myId: 4, name: "Node 4" },
         { myId: 5, name: "Node 5" },
       ];
-      treeData = new TreeData(tree);
+      treeData = new TreeData(tree, {
+        childrenKey: "myChildren",
+        idKey: "myId",
+      });
       const result = treeData
-        .insertNodes((node) => node.myId === 2, newNodes, {
-          childrenKey: "myChildren",
-          idKey: "myId",
-        })
+        .insertNodes((node) => node.myId === 2, newNodes)
         .getResult();
 
       expect(result).toEqual([
