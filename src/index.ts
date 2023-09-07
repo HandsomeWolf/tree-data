@@ -4,27 +4,49 @@ import {
   DEFAULT_ID_KEY,
   DEFAULT_OPTIONS,
   DEFAULT_PARENT_ID_KEY,
+  DELETED_OPTIONS,
+  FILTERTREE_OPTIONS,
+  GETNODES_OPTIONS,
   PARENTNODEBYID_OPTIONS,
   TREEDIMENSIONS__OPTIONS,
   TREE_TO_DATA_OPTIONS,
 } from "./constants/parameters";
 import {
-  type CreateMapOptions,
-  type DataToTreeOptions,
+  type DefaultOptions,
   type DeleteOptions,
+  type FilterTree,
+  type GetNodesOptions,
   type GetParentNodeByIdOptions,
-  type InsertOptions,
   type KeyValueObject,
-  type ModifyOptions,
-  type PathOptions,
   type TreeDimensionsOptions,
   type TreeToDataOptions,
 } from "./interfaces/options";
+import { isArray2D } from "./utils";
+export {
+  TraversalMethod,
+  DefaultOptions,
+  DeleteOptions,
+  FilterTree,
+  GetNodesOptions,
+  GetParentNodeByIdOptions,
+  KeyValueObject,
+  TreeDimensionsOptions,
+  TreeToDataOptions,
+} from "./interfaces/options";
 
 export class TreeData {
-  public result: KeyValueObject | KeyValueObject[] | null = null;
-  constructor(public trees: KeyValueObject[] = []) {
+  public result: KeyValueObject[] | null = null;
+  public idKey: string = "id";
+  public parentIdKey: string = "parentId";
+  public childrenKey: string = "children";
+  constructor(
+    public trees: KeyValueObject[] = [],
+    options: DefaultOptions = DEFAULT_OPTIONS,
+  ) {
     this.trees = trees;
+    this.idKey = options.idKey || DEFAULT_ID_KEY;
+    this.parentIdKey = options.parentIdKey || DEFAULT_PARENT_ID_KEY;
+    this.childrenKey = options.childrenKey || DEFAULT_CHILDREN_KEY;
   }
 
   static printTree(
@@ -45,7 +67,7 @@ export class TreeData {
     }
   }
 
-  static treeToData(
+  treeToData(
     tree: KeyValueObject,
     options: TreeToDataOptions = TREE_TO_DATA_OPTIONS,
   ): KeyValueObject[] {
@@ -53,8 +75,7 @@ export class TreeData {
       throw new Error("Invalid tree: Tree must be a non-empty object."); // 抛出错误：树必须是非空对象
     }
 
-    const { childrenKey = DEFAULT_CHILDREN_KEY, traversalMethod = "BFS" } =
-      options;
+    const { traversalMethod = "BFS" } = options;
     const data: KeyValueObject[] = [];
     const queueOrStack: KeyValueObject[] = [tree];
 
@@ -69,25 +90,30 @@ export class TreeData {
         throw new Error("Unexpected error: Node is undefined."); // 抛出错误：节点未定义
       }
 
-      if (node[childrenKey]) {
+      if (node[this.childrenKey]) {
         const childrenNodes =
-          traversalMethod === "BFS" ? node[childrenKey] : node[childrenKey];
+          traversalMethod === "BFS"
+            ? node[this.childrenKey]
+            : node[this.childrenKey];
         queueOrStack.push(...childrenNodes);
-        delete node[childrenKey];
+        delete node[this.childrenKey];
       }
       data.push(node);
     }
-
     return data;
   }
 
-  static treesToData(
-    trees: KeyValueObject | KeyValueObject[],
+  treesToData(
     options: TreeToDataOptions = TREE_TO_DATA_OPTIONS,
   ): KeyValueObject[] | KeyValueObject[][] {
-    return Array.isArray(trees)
-      ? trees.map((tree) => this.treeToData(tree, options))
-      : this.treeToData(trees, options);
+    const currentTree = this.result || this.trees;
+    const newTree = _.cloneDeep(currentTree);
+    const result = Array.isArray(newTree)
+      ? newTree.map((tree) => this.treeToData(tree, options))
+      : this.treeToData(newTree, options);
+    return isArray2D(result) && result.length === 1
+      ? (result[0] as KeyValueObject[])
+      : result;
   }
   static traverseBFS(
     tree: KeyValueObject[],
@@ -118,33 +144,25 @@ export class TreeData {
     return this.result;
   }
 
-  dataToTree(
-    data: KeyValueObject[],
-    options: DataToTreeOptions = DEFAULT_OPTIONS,
-  ): this {
-    const {
-      parentIdKey = DEFAULT_PARENT_ID_KEY,
-      childrenKey = DEFAULT_CHILDREN_KEY,
-    } = options;
-
+  dataToTree(data: KeyValueObject[]): this {
     const newData = _.cloneDeep(data);
     const tree: KeyValueObject[] = [];
 
     // Use createMap to create a map (使用 createMap 创建映射)
-    const nodeMap = createMap(newData, options);
+    const nodeMap = this.createMap(newData);
 
     for (const datum of newData) {
-      const parentId = datum[parentIdKey];
+      const parentId = datum[this.parentIdKey];
       if (parentId) {
         // Get the parent node from the map (从映射中获取父节点)
         const parent = nodeMap.get(parentId);
         if (parent) {
           // If the parent node doesn't have a children array, create one (如果父节点没有子节点数组，创建一个)
-          if (!parent[childrenKey]) {
-            parent[childrenKey] = [];
+          if (!parent[this.childrenKey]) {
+            parent[this.childrenKey] = [];
           }
           // Add the current node to the parent's children array (将当前节点添加到父节点的子节点数组中)
-          parent[childrenKey].push(datum);
+          parent[this.childrenKey].push(datum);
         }
       } else {
         // If the node doesn't have a parent ID, add it to the root of the tree (如果节点没有父节点ID，将其添加到树的根部)
@@ -158,18 +176,20 @@ export class TreeData {
 
   deleteNodesByIds(
     ids: number[],
-    options: DeleteOptions = DEFAULT_OPTIONS,
+    options: DeleteOptions = DELETED_OPTIONS,
   ): this {
-    this.result = deleteNodes(this.trees, new Set(ids), options);
+    const currentTree = this.result || this.trees;
+    this.result = this.deleteNodesCommon(currentTree, new Set(ids), options);
     return this;
   }
 
   deleteNodes(
     predicate: (node: KeyValueObject) => boolean,
-    options: DeleteOptions = DEFAULT_OPTIONS,
+    options: DeleteOptions = DELETED_OPTIONS,
   ): this {
+    const currentTree = this.result || this.trees;
     const idsToDelete = new Set<number>();
-    for (const tree of this.trees) {
+    for (const tree of currentTree) {
       const queue: KeyValueObject[] = [tree];
       while (!_.isEmpty(queue)) {
         const node = queue.shift() as KeyValueObject;
@@ -182,26 +202,24 @@ export class TreeData {
         }
       }
     }
-    this.result = deleteNodes(this.trees, idsToDelete, options);
+    this.result = this.deleteNodesCommon(currentTree, idsToDelete, options);
     return this;
   }
 
   insertNodesByIds(
     parentIds: (number | string)[],
     newNodes: KeyValueObject[],
-    options: InsertOptions = DEFAULT_OPTIONS,
   ): this {
-    const { childrenKey = DEFAULT_CHILDREN_KEY } = options;
-
-    const newTree = _.cloneDeep(this.trees);
-    const nodeMap = createMap(newTree, options);
+    const currentTree = this.result || this.trees;
+    const newTree = _.cloneDeep(currentTree);
+    const nodeMap = this.createMap(newTree);
 
     for (const parentId of parentIds) {
       const parentNode = nodeMap.get(parentId);
 
       if (parentNode) {
-        parentNode[childrenKey] = parentNode[childrenKey] || [];
-        parentNode[childrenKey].push(...newNodes);
+        parentNode[this.childrenKey] = parentNode[this.childrenKey] || [];
+        parentNode[this.childrenKey].push(...newNodes);
       }
     }
 
@@ -211,20 +229,17 @@ export class TreeData {
   insertNodes(
     queryFunction: (node: KeyValueObject) => boolean,
     newNodes: KeyValueObject[],
-    options: InsertOptions = DEFAULT_OPTIONS,
   ): this {
-    const { idKey = DEFAULT_ID_KEY, childrenKey = DEFAULT_CHILDREN_KEY } =
-      options;
-
-    const newTree = _.cloneDeep(this.trees);
-    const nodeMap = createMap(newTree, options);
+    const currentTree = this.result || this.trees;
+    const newTree = _.cloneDeep(currentTree);
+    const nodeMap = this.createMap(newTree);
 
     for (const [_key, node] of nodeMap) {
       if (queryFunction(node)) {
-        const newNode = _.find(newTree, { [idKey]: node[idKey] });
+        const newNode = _.find(newTree, { [this.idKey]: node[this.idKey] });
         if (newNode) {
-          newNode[childrenKey] = newNode[childrenKey] || [];
-          newNode[childrenKey].push(...newNodes);
+          newNode[this.childrenKey] = newNode[this.childrenKey] || [];
+          newNode[this.childrenKey].push(...newNodes);
         }
       }
     }
@@ -236,19 +251,16 @@ export class TreeData {
   modifyNodesByIds(
     ids: number[],
     keyValuePairs: Partial<KeyValueObject>,
-    options: ModifyOptions = DEFAULT_OPTIONS,
   ): this {
-    const { idKey = DEFAULT_ID_KEY, childrenKey = DEFAULT_CHILDREN_KEY } =
-      options;
-
+    const currentTree = this.result || this.trees;
     const idsToModify = new Set(ids);
-    const newTree: KeyValueObject[] = _.cloneDeep(this.trees);
+    const newTree: KeyValueObject[] = _.cloneDeep(currentTree);
     const queue = [...newTree];
 
     while (queue.length > 0) {
       const node = queue.shift() as KeyValueObject;
 
-      if (idsToModify.has(node[idKey])) {
+      if (idsToModify.has(node[this.idKey])) {
         for (const key of Object.keys(keyValuePairs)) {
           node[key as keyof KeyValueObject] =
             keyValuePairs[key as keyof KeyValueObject];
@@ -256,7 +268,7 @@ export class TreeData {
       }
 
       // 修改子节点 (Modify the child nodes)
-      const children = node[childrenKey] as KeyValueObject[];
+      const children = node[this.childrenKey] as KeyValueObject[];
       if (children) {
         queue.push(...children);
       }
@@ -265,15 +277,11 @@ export class TreeData {
     return this;
   }
 
-  modifyNodes(
-    modifyFunction: (node: KeyValueObject) => KeyValueObject,
-    options: ModifyOptions = DEFAULT_OPTIONS,
-  ): this {
-    const { childrenKey = DEFAULT_CHILDREN_KEY } = options;
-    const childrenKeyAsKeyOfKeyValueObject =
-      childrenKey as keyof KeyValueObject;
+  modifyNodes(modifyFunction: (node: KeyValueObject) => KeyValueObject): this {
+    const currentTree = this.result || this.trees;
+    const childrenKeyAsKeyOfKeyValueObject = this.childrenKey;
 
-    const newTree: KeyValueObject[] = _.cloneDeep(this.trees);
+    const newTree: KeyValueObject[] = _.cloneDeep(currentTree);
     const queue = [...newTree];
 
     while (queue.length > 0) {
@@ -297,15 +305,16 @@ export class TreeData {
   getTreeDimensions(
     options: TreeDimensionsOptions = TREEDIMENSIONS__OPTIONS,
   ): { depth: number; width: number }[] {
-    const { index = undefined, childrenKey = DEFAULT_CHILDREN_KEY } = options;
+    const { index = undefined } = options;
+    const currentTree = this.result || this.trees;
 
     // 如果 this.trees 是数组，根据 index 参数选择特定的树或所有的树
     // (If this.trees is an array, select a specific tree or all trees based on the index parameter)
-    const trees = Array.isArray(this.trees)
+    const trees = Array.isArray(currentTree)
       ? typeof index === "number"
-        ? [this.trees[index]]
-        : this.trees
-      : [this.trees];
+        ? [currentTree[index]]
+        : currentTree
+      : [currentTree];
 
     const dimensions = trees.map((tree) => {
       let maxDepth = 0;
@@ -329,7 +338,7 @@ export class TreeData {
           const node = queue.shift();
           if (node) {
             // 确保 node 不是 undefined (Ensure node is not undefined)
-            const children = node[childrenKey];
+            const children = node[this.childrenKey];
             if (Array.isArray(children)) {
               queue.push(...children);
             }
@@ -343,16 +352,11 @@ export class TreeData {
     return dimensions;
   }
 
-  getNodePathById(
-    targetId: number | string,
-    options: PathOptions = DEFAULT_OPTIONS,
-  ) {
-    const { idKey = DEFAULT_ID_KEY, childrenKey = DEFAULT_CHILDREN_KEY } =
-      options;
-
+  getNodePathById(targetId: number | string) {
+    const currentTree = this.result || this.trees;
     // 创建一个栈，用于存储节点和路径 (Create a stack to store nodes and paths)
     const stack: { node: KeyValueObject; path: KeyValueObject[] }[] =
-      this.trees.map((node) => ({
+      currentTree.map((node) => ({
         node,
         path: [node],
       }));
@@ -360,11 +364,11 @@ export class TreeData {
     while (stack.length > 0) {
       const { node, path } = stack.pop()!;
 
-      if (node[idKey] === targetId) {
+      if (node[this.idKey] === targetId) {
         return path;
       }
 
-      const children = node[childrenKey] as KeyValueObject[];
+      const children = node[this.childrenKey] as KeyValueObject[];
       if (children) {
         for (const child of children) {
           stack.push({ node: child, path: [...path, child] });
@@ -385,7 +389,7 @@ export class TreeData {
       includeChildren = false,
     } = options;
 
-    const path = this.getNodePathById(id, options);
+    const path = this.getNodePathById(id);
 
     if (path && path.length > levelsUp) {
       const parentNode = { ...path.at(-1 - levelsUp) } || null; // 创建一个新的父节点对象 (Create a new parent node object)
@@ -394,7 +398,7 @@ export class TreeData {
       } else if (parentNode) {
         delete parentNode.children; // 删除children属性 (Delete the children property)
       }
-      this.result = parentNode;
+      this.result = [parentNode];
       return this;
     } else if (returnRootIfAbsent && path && path.length > 0) {
       const rootNode = { ...path.at(0) } ?? null; // 创建一个新的根节点对象 (Create a new root node object)
@@ -403,7 +407,7 @@ export class TreeData {
       } else if (rootNode) {
         delete rootNode.children; // 删除children属性 (Delete the children property)
       }
-      this.result = rootNode;
+      this.result = [rootNode];
       return this;
     }
     this.result = null;
@@ -412,17 +416,14 @@ export class TreeData {
 
   getNodes(
     match: { [key: string]: any },
-    options?: {
-      findAll?: boolean;
-      childrenKey?: string;
-      includeChildren?: boolean;
-    },
+    options: GetNodesOptions = GETNODES_OPTIONS,
   ): this {
+    const currentTree = this.result || this.trees;
+
     const findAll = options?.findAll || false;
-    const childrenKey = options?.childrenKey || "children";
     const includeChildren = options?.includeChildren || false;
     const result: KeyValueObject[] = [];
-    const stack: KeyValueObject[] = [...this.trees];
+    const stack: KeyValueObject[] = [...currentTree];
 
     while (stack.length > 0) {
       const node = stack.pop()!;
@@ -431,22 +432,22 @@ export class TreeData {
           if (findAll) {
             result.push(node);
           } else {
-            this.result = node;
+            this.result = [node];
             return this;
           }
         } else {
-          const { [childrenKey]: _, ...nodeWithoutChildren } = node;
+          const { [this.childrenKey]: _, ...nodeWithoutChildren } = node;
           if (findAll) {
             result.push(nodeWithoutChildren);
           } else {
-            this.result = nodeWithoutChildren;
+            this.result = [nodeWithoutChildren];
             return this;
           }
         }
       }
 
       const children = node[
-        childrenKey as keyof KeyValueObject
+        this.childrenKey as keyof KeyValueObject
       ] as KeyValueObject[];
       if (children) {
         stack.push(...children);
@@ -455,18 +456,11 @@ export class TreeData {
     this.result = findAll ? result : null;
     return this;
   }
-  filterTree(options?: {
-    include?: { [key: string]: any[] };
-    exclude?: { [key: string]: any[] };
-    childrenKey?: string;
-    idKey?: string;
-    isDeleteEmptyChildren?: boolean;
-  }): this {
-    const idKey = options?.idKey || "id";
-    const childrenKey = options?.childrenKey || "children";
+  filterTree(options: FilterTree = FILTERTREE_OPTIONS): this {
+    const currentTree = this.result || this.trees;
     const isDeleteEmptyChildren = options?.isDeleteEmptyChildren || false;
 
-    const newTree: KeyValueObject[] = _.cloneDeep(this.trees);
+    const newTree: KeyValueObject[] = _.cloneDeep(currentTree);
     const queue: KeyValueObject[] = [...newTree];
     const parents: { [key: string]: KeyValueObject[] } = {};
 
@@ -475,21 +469,21 @@ export class TreeData {
     while (!_.isEmpty(queue)) {
       const node = queue.shift() as KeyValueObject;
 
-      if (!Object.prototype.hasOwnProperty.call(node, idKey)) {
+      if (!Object.prototype.hasOwnProperty.call(node, this.idKey)) {
         console.warn(
-          `Node is missing '${idKey}' field. You may need to use the optional parameter {idKey: 'your custom id'}`,
+          `Node is missing '${this.idKey}' field. You may need to use the optional parameter {idKey: 'your custom id'}`,
         );
       }
 
       if (options?.exclude) {
-        markNodesForDeletion(node, options.exclude, idKey, parents);
+        markNodesForDeletion(node, options.exclude, this.idKey, parents);
       }
 
       if (options?.include) {
         const includeResult = markNodesForDeletion(
           node,
           options.include,
-          idKey,
+          this.idKey,
           parents,
           true,
         );
@@ -498,15 +492,13 @@ export class TreeData {
         }
       }
 
-      const children = node[
-        childrenKey as keyof KeyValueObject
-      ] as KeyValueObject[];
+      const children = node[this.childrenKey] as KeyValueObject[];
       if (children) {
         for (const child of children) {
-          if (!parents[child[idKey]]) {
-            parents[child[idKey]] = [];
+          if (!parents[child[this.idKey]]) {
+            parents[child[this.idKey]] = [];
           }
-          parents[child[idKey]].push(node);
+          parents[child[this.idKey]].push(node);
           queue.push(child);
         }
       }
@@ -521,8 +513,8 @@ export class TreeData {
     for (const parentList of Object.values(parents)) {
       for (const parent of parentList) {
         if (parent && parent.toBeDeletedChildren) {
-          _.remove(parent[childrenKey], (child: KeyValueObject) =>
-            parent.toBeDeletedChildren.includes(child[idKey]),
+          _.remove(parent[this.childrenKey], (child: KeyValueObject) =>
+            parent.toBeDeletedChildren.includes(child[this.idKey]),
           );
           delete parent.toBeDeletedChildren;
         }
@@ -532,8 +524,8 @@ export class TreeData {
     if (isDeleteEmptyChildren) {
       for (const parentList of Object.values(parents)) {
         for (const parent of parentList) {
-          if (parent && _.isEmpty(parent[childrenKey])) {
-            delete parent[childrenKey];
+          if (parent && _.isEmpty(parent[this.childrenKey])) {
+            delete parent[this.childrenKey];
           }
         }
       }
@@ -541,78 +533,108 @@ export class TreeData {
     this.result = newTree;
     return this;
   }
-}
+  // utils
+  createMap(tree: KeyValueObject[]): Map<number | string, KeyValueObject> {
+    const map = new Map<number | string, KeyValueObject>();
 
-function deleteNodes(
-  trees: KeyValueObject[],
-  idsToDelete: Set<number>,
-  options: DeleteOptions = DEFAULT_OPTIONS,
-): KeyValueObject[] {
-  const {
-    idKey = DEFAULT_ID_KEY,
-    childrenKey = DEFAULT_CHILDREN_KEY,
-    deleteSelf = true,
-    isDeleteEmptyChildren = false,
-  } = options;
-
-  const newTrees: KeyValueObject[] = _.cloneDeep(trees); // 创建新的tree对象
-
-  for (const tree of newTrees) {
-    const queue: KeyValueObject[] = [tree];
-    const parents: Map<number, KeyValueObject> = new Map();
-
+    // 使用队列代替堆栈 (Use queue instead of stack)
+    const queue: KeyValueObject[] = [...tree];
     while (!_.isEmpty(queue)) {
-      const node = queue.shift() as KeyValueObject;
-
-      if (idsToDelete.has(node[idKey])) {
-        if (deleteSelf) {
-          const parent = parents.get(node[idKey]);
-          if (parent) {
-            if (!parent.toBeDeletedChildren) {
-              parent.toBeDeletedChildren = new Set();
-            }
-            parent.toBeDeletedChildren.add(node[idKey]); // 存储待删除子节点的 id
-          }
-        } else {
-          // 如果deleteSelf为false，删除节点的所有子节点
-          node[childrenKey] = [];
-        }
-      } else {
-        const children = node[childrenKey] as KeyValueObject[];
-        if (children) {
-          for (const child of children) {
-            parents.set(child[idKey], node);
-            queue.push(child);
-          }
-        }
+      const node = queue.shift()!;
+      map.set(node[this.idKey], node);
+      if (node[this.childrenKey]) {
+        queue.push(...node[this.childrenKey]);
       }
     }
 
-    for (const parent of parents.values()) {
-      if (parent && parent.toBeDeletedChildren) {
-        _.remove(parent[childrenKey], (child: KeyValueObject) =>
-          parent.toBeDeletedChildren.has(child[idKey]),
-        );
-        delete parent.toBeDeletedChildren;
-      }
-    }
+    return map;
+  }
+  deleteNodesCommon(
+    trees: KeyValueObject[],
+    idsToDelete: Set<number>,
+    options: DeleteOptions = DELETED_OPTIONS,
+  ): KeyValueObject[] {
+    const { deleteSelf = true, isDeleteEmptyChildren = false } = options;
 
-    if (isDeleteEmptyChildren) {
+    const newTrees: KeyValueObject[] = _.cloneDeep(trees); // 创建新的tree对象
+
+    for (const tree of newTrees) {
       const queue: KeyValueObject[] = [tree];
+      const parents: Map<number, KeyValueObject> = new Map();
+
       while (!_.isEmpty(queue)) {
         const node = queue.shift() as KeyValueObject;
-        const children = node[childrenKey] as KeyValueObject[];
-        if (children) {
-          if (children.length === 0) {
-            delete node[childrenKey];
+
+        if (idsToDelete.has(node[this.idKey])) {
+          if (deleteSelf) {
+            const parent = parents.get(node[this.idKey]);
+            if (parent) {
+              if (!parent.toBeDeletedChildren) {
+                parent.toBeDeletedChildren = new Set();
+              }
+              parent.toBeDeletedChildren.add(node[this.idKey]); // 存储待删除子节点的 id
+            }
           } else {
-            queue.push(...children);
+            // 如果deleteSelf为false，删除节点的所有子节点
+            node[this.childrenKey] = [];
+          }
+        } else {
+          const children = node[this.childrenKey] as KeyValueObject[];
+          if (children) {
+            for (const child of children) {
+              parents.set(child[this.idKey], node);
+              queue.push(child);
+            }
+          }
+        }
+      }
+
+      for (const parent of parents.values()) {
+        if (parent && parent.toBeDeletedChildren) {
+          _.remove(parent[this.childrenKey], (child: KeyValueObject) =>
+            parent.toBeDeletedChildren.has(child[this.idKey]),
+          );
+          delete parent.toBeDeletedChildren;
+        }
+      }
+
+      if (isDeleteEmptyChildren) {
+        const queue: KeyValueObject[] = [tree];
+        while (!_.isEmpty(queue)) {
+          const node = queue.shift() as KeyValueObject;
+          const children = node[this.childrenKey] as KeyValueObject[];
+          if (children) {
+            if (children.length === 0) {
+              delete node[this.childrenKey];
+            } else {
+              queue.push(...children);
+            }
           }
         }
       }
     }
+    return _.remove(newTrees, (node) => !idsToDelete.has(node[this.idKey]));
   }
-  return _.remove(newTrees, (node) => !idsToDelete.has(node[idKey]));
+
+  sortNodes(
+    compareFunction: (a: KeyValueObject, b: KeyValueObject) => number,
+  ): this {
+    const currentTree = this.result || this.trees;
+    const newTree: KeyValueObject[] = _.cloneDeep(currentTree);
+    const queue: KeyValueObject[] = [...newTree];
+
+    while (queue.length > 0) {
+      const node = queue.shift() as KeyValueObject;
+      const children = node[this.childrenKey] as KeyValueObject[];
+      if (children) {
+        children.sort(compareFunction); // 对子节点进行排序
+        queue.push(...children);
+      }
+    }
+
+    this.result = newTree;
+    return this;
+  }
 }
 
 // filter
@@ -680,24 +702,4 @@ function areAllChildrenExcluded(
     }
   }
   return true;
-}
-function createMap(
-  tree: KeyValueObject[],
-  options: CreateMapOptions = DEFAULT_OPTIONS,
-): Map<number | string, KeyValueObject> {
-  const { childrenKey = DEFAULT_CHILDREN_KEY, idKey = DEFAULT_ID_KEY } =
-    options;
-  const map = new Map<number | string, KeyValueObject>();
-
-  // 使用队列代替堆栈 (Use queue instead of stack)
-  const queue: KeyValueObject[] = [...tree];
-  while (!_.isEmpty(queue)) {
-    const node = queue.shift()!;
-    map.set(node[idKey], node);
-    if (node[childrenKey]) {
-      queue.push(...node[childrenKey]);
-    }
-  }
-
-  return map;
 }
