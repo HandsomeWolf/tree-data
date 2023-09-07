@@ -6,6 +6,8 @@
 //   method: "BFS" as method,
 // };
 
+import { TraversalMethod } from "../interfaces/options";
+
 export const DEFAULT_ID_KEY = "id";
 export const DEFAULT_CHILDREN_KEY = "children";
 export const DEFAULT_PARENT_ID_KEY = "parentId";
@@ -20,6 +22,7 @@ export const DEFAULT_OPTIONS = {
 // to-data
 export const TREE_TO_DATA_OPTIONS = {
   childrenKey: DEFAULT_CHILDREN_KEY,
+  traversalMethod: TraversalMethod.BFS,
 };
 
 export const DELETED_OPTIONS = {
@@ -36,6 +39,14 @@ export const PARENTNODEBYID_OPTIONS = {
 };
 
 export const TREEDIMENSIONS__OPTIONS = {
-  ...DEFAULT_OPTIONS,
   index: undefined,
+};
+
+export const GETNODES_OPTIONS = {
+  findAll: false,
+  includeChildren: false,
+};
+
+export const FILTERTREE_OPTIONS = {
+  isDeleteEmptyChildren: false,
 };

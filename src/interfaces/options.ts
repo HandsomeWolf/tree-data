@@ -1,4 +1,8 @@
-type TraversalMethod = "BFS" | "DFS";
+export enum TraversalMethod {
+  BFS = "BFS",
+  DFS = "DFS",
+  // 添加其他可能的值
+}
 
 export interface KeyValueObject {
   [key: string]: any;
@@ -27,19 +31,18 @@ export interface TreeToDataOptions
   traversalMethod?: TraversalMethod;
 }
 
-export interface TreeDimensionsOptions
-  extends Omit<DefaultOptions, "idKek" | "parentIdKey"> {
+export interface TreeDimensionsOptions {
   index?: number;
 }
 
-export interface DataToTreeOptions extends DefaultOptions {}
+// export interface DataToTreeOptions extends DefaultOptions {}
 export interface InsertOptions extends Omit<DefaultOptions, "parentIdKey"> {}
 export interface ModifyOptions extends Omit<DefaultOptions, "parentIdKey"> {}
 export interface PathOptions extends Omit<DefaultOptions, "parentIdKey"> {}
 
-export interface CreateMapOptions extends DefaultOptions {}
+// export interface CreateMapOptions extends DefaultOptions {}
 
-export interface DeleteOptions extends Omit<DefaultOptions, "parentIdKey"> {
+export interface DeleteOptions {
   /**
    * 是否删除空的子元素数组，默认为false
    */
@@ -63,4 +66,15 @@ export interface GetParentNodeByIdOptions extends PathOptions {
    * 是否返回的父节点对象是否包含其子节点，默认值为false
    */
   includeChildren?: boolean;
+}
+
+export interface GetNodesOptions {
+  findAll?: boolean;
+  includeChildren?: boolean;
+}
+
+export interface FilterTree {
+  include?: { [key: string]: any[] };
+  exclude?: { [key: string]: any[] };
+  isDeleteEmptyChildren?: boolean;
 }
