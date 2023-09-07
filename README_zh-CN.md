@@ -68,3 +68,42 @@ const options = {
 const treeData = new TreeData(trees, options);
 ```
 
+链式调用
+
+TreeData 类的实例方法支持链式调用，这意味着你可以将多个操作链接在一起。例如：
+
+```TypeScript
+import { TreeData } from "@handsomewolf/tree-data";
+
+const trees = [
+  {
+    id: 1,
+    children: [{ id: 3 }, { id: 2 }],
+  },
+  {
+    id: 4,
+    children: [{ id: 6 }, { id: 5 }],
+  },
+];
+
+const treeData = new TreeData(trees);
+
+treeData
+  .sortNodes((a, b) => a.id - b.id)
+  .filterTree({ exclude: { id: [3] } });
+
+const result = treeData.getResult();
+console.log(result);
+// 输出：
+// [
+//   {
+//     id: 1,
+//     children: [{ id: 2 }],
+//   },
+//   {
+//     id: 4,
+//     children: [{ id: 5 }, { id: 6 }],
+//   },
+// ]
+```
+
