@@ -1,6 +1,6 @@
 # 功能
 
-这两个函数的主要功能是在树形结构中插入新的节点。
+树形结构中插入新的节点。
 
 `insertNodesByIds`函数通过父节点的ID来插入新的节点。它使用了映射（Map）来存储树中的节点。
 
@@ -9,25 +9,22 @@
 ## 语法
 
 ```TypeScript
-insertNodesByIds(tree, ids, newNodes, option)
+import { TreeData } from "@handsomewolf/tree-data";
 
-insertNodes(tree, inertFunction, newNodes, option)
+const treeData = new TreeData()
+treeData.insertNodesByIds(parentIds, newNodes)
+
+treeData.insertNodes(queryFunction, newNodes)
 ```
-
-## 可选参数
-| 参数名 | 值类型 | 作用 |
-| --- | --- | --- |
-| idKey | String | id的键名，默认为 `id` |
-| childrenKey | String | children的键名，默认为 `children` |
 
 ## insertNodesByIds
 
 ### 示例
 
 ```TypeScript
-import { insertNodesByIds } from "@handsomewolf/tree-data";
+import { TreeData } from "@handsomewolf/tree-data";
 
-const tree = [
+const treeData = new TreeData([
   {
     id: 1,
     children: [{ id: 2 }, { id: 3 }],
@@ -36,12 +33,13 @@ const tree = [
     id: 4,
     children: [{ id: 5 }],
   },
-];
+]);
 
 const newNodes = [{ id: 6 }, { id: 7 }];
 
-const result = insertNodesByIds(tree, [1], newNodes)
-console.log(result)
+treeData.insertNodesByIds([1], newNodes);
+const result = treeData.getResult();
+console.log(result);
 
 // 输出：
 // [
@@ -54,15 +52,15 @@ console.log(result)
 //     children: [{ id: 5 }],
 //   },
 // ]
-
 ```
 
 自定义键名
 
 ```TypeScript
-import { insertNodesByIds } from "@handsomewolf/tree-data";
 
- const tree = [
+import { TreeData } from "@handsomewolf/tree-data";
+
+const treeData = new TreeData([
   {
     myId: 1,
     myChildren: [{ myId: 2 }, { myId: 3 }],
@@ -71,15 +69,16 @@ import { insertNodesByIds } from "@handsomewolf/tree-data";
     myId: 4,
     myChildren: [{ myId: 5 }],
   },
-];
+],{
+  childrenKey: "myChildren",
+  idKey: "myId",
+});
 
 const newNodes = [{ myId: 6 }, { myId: 7 }];
 
-const result =  insertNodesByIds(tree, [1], newNodes, {
-                  childrenKey: "myChildren",
-                  idKey: "myId",
-                })
-console.log(result)
+treeData.insertNodesByIds([1], newNodes);
+const result = treeData.getResult();
+console.log(result);
 
 // 输出：
 // [
@@ -102,21 +101,22 @@ console.log(result)
 ### 示例
 
 ```TypeScript
-import { insertNodesByIds } from "@handsomewolf/tree-data";
+import { TreeData } from "@handsomewolf/tree-data";
 
- const tree =  [
+const treeData = new TreeData([
   { id: 1, name: "Node 1", children: [] },
   { id: 2, name: "Node 2", children: [] },
   { id: 3, name: "Node 3", children: [] },
-]
+]);
 
 const newNodes = [
   { id: 4, name: "Node 4", children: [] },
   { id: 5, name: "Node 5", children: [] },
 ];
 
-const result =  insertNodes(tree, (node) => node.id === 2, newNodes)
-console.log(result)
+treeData.insertNodes((node) => node.id === 2, newNodes);
+const result = treeData.getResult();
+console.log(result);
 
 // 输出：
 // [
@@ -131,5 +131,4 @@ console.log(result)
 //   },
 //   { id: 3, name: "Node 3", children: [] },
 // ]
-
 ```

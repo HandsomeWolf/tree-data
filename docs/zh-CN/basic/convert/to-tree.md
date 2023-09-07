@@ -7,21 +7,26 @@
 ## 语法
 
 ```TypeScript
-dataTOTree(data, options)
+import { TreeData } from "@handsomewolf/tree-data";
+
+const treeData = new TreeData();
+treeData.dataToTree(data);
 ```
 
 ## 可选参数
 
+在创建 TreeData 实例时，可以给`new TreeData([], options)`第二个参数传入一个选项对象，该对象的属性如下：
+
 | 参数名 | 值类型 | 作用 |
 | --- | --- | --- |
-| idKey | String | id的键名，默认为 `id` |
-| parentIdKey | String | parentId的键名，默认为 `parentId` |
-| childrenKey | String | children的键名，默认为 `children` |
+| idKey | String | id的键名，默认为 id |
+| parentIdKey | String | parentId的键名，默认为 parentId |
+| childrenKey | String | children的键名，默认为 children |
 
 ## 示例
 
 ```TypeScript
-import { dataToTree } from "@handsomewolf/tree-data";
+import { TreeData } from "@handsomewolf/tree-data";
 
 const data = [
   { id: 1, parentId: null },
@@ -30,7 +35,8 @@ const data = [
   { id: 4, parentId: 2 },
 ];
 
-const result = dataToTree(data)
+const treeData = new TreeData();
+const result = treeData.dataToTree(data).getResult();
 console.log(result);
 // 输出：
 // [
@@ -48,7 +54,7 @@ console.log(result);
 自定义键名：
 
 ```TypeScript
-import { dataToTree } from "@handsomewolf/tree-data";
+import { TreeData } from "@handsomewolf/tree-data";
 
 const data = [
   { myId: 1, myParentId: null, },
@@ -57,17 +63,17 @@ const data = [
   { myId: 4, myParentId: 2 },
 ];
 
-const result = dataToTree(data, {
+const treeData = new TreeData([], {
                   idKey: "myId",
                   parentIdKey: "myParentId",
                   childrenKey: "customChildren",
-               })
+               });
+const result = treeData.dataToTree(data).getResult();
 console.log(result);
 // 输出：
 // [
 //   {
 //     myId: 1,
-//     test: false,
 //     myParentId: null,
 //     customChildren: [
 //       {
@@ -78,5 +84,56 @@ console.log(result);
 //       { myId: 3, myParentId: 1 },
 //     ],
 //   },
+// ]
+```
+
+处理多棵树
+
+```TypeScript
+import { TreeData } from "@handsomewolf/tree-data";
+
+const data = [
+  { id: 1, parentId: null },
+  { id: 2, parentId: 1 },
+  { id: 3, parentId: 1 },
+  { id: 4, parentId: 2 },
+  { id: 10, parentId: null },
+  { id: 20, parentId: 10 },
+  { id: 30, parentId: 10 },
+  { id: 40, parentId: 20 },
+  { id: 100, parentId: null },
+  { id: 200, parentId: 100 },
+  { id: 300, parentId: 100 },
+  { id: 400, parentId: 200 },
+];
+
+const result = treeData.dataToTree(data).getResult();
+console.log(result);
+// 输出：
+// [
+//   {
+//     id: 1,
+//     parentId: null,
+//     children: [
+//       { id: 2, parentId: 1, children: [{ id: 4, parentId: 2 }] },
+//       { id: 3, parentId: 1 },
+//     ],
+//   },
+//   {
+//     id: 10,
+//     parentId: null,
+//     children: [
+//       { id: 20, parentId: 10, children: [{ id: 40, parentId: 20 }] },
+//       { id: 30, parentId: 10 },
+//     ],
+//   },
+//   {
+//     id: 100,
+//     parentId: null,
+//     children: [
+//       { id: 200, parentId: 100, children: [{ id: 400, parentId: 200 }] },
+//       { id: 300, parentId: 100 },
+//     ],
+//   }
 // ]
 ```

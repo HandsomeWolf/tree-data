@@ -9,28 +9,30 @@
 ## 语法
 
 ```TypeScript
-deleteNodesByIds(tree, ids, option)
+import { TreeData } from "@handsomewolf/tree-data";
 
-deleteNodes(tree, deleteFunction, option)
+const treeData = new TreeData()
+
+treeData.deleteNodesByIds(ids, option)
+
+treeData.deleteNodes(deleteFunction, option)
 ```
 
 ## 可选参数
 
 | 参数名 | 值类型 | 作用 |
 | --- | --- | --- |
-| idKey | String | id的键名，默认为 `id` |
-| childrenKey | String | children的键名，默认为 `children` |
-| deleteSelf | Boolean | 是否删除自己，默认为 `true`，即删除子元素也删除自己 |
-| isDeleteEmptyChildren | Boolean | 是否删除空的子元素，默认为 `false`，即当子元素都删除没了之后是否保留`children:[]` |
+| deleteSelf | Boolean | 是否删除自己，默认为 true，即删除子元素也删除自己 |
+| isDeleteEmptyChildren | Boolean | 是否删除空的子元素，默认为 false，即当子元素都删除没了之后是否保留children:[] |
 
 ## deleteNodesByIds
 
 ### 示例
 
 ```TypeScript
-import { deleteNodesByIds } from "@handsomewolf/tree-data";
+import { TreeData } from "@handsomewolf/tree-data";
 
-const tree = [
+const treeData = new TreeData([
   {
     id: 1,
     children: [
@@ -47,10 +49,10 @@ const tree = [
       },
     ],
   },
-];
+]);
 
-const result=deleteNodesByIds(tree, [2,4])
-console.log(result)
+const result = treeData.deleteNodesByIds([2,4]).getResult();
+console.log(result);
 
 // 输出：
 // [{ id: 1, children: [] }]
@@ -59,9 +61,9 @@ console.log(result)
 若子元素全部删除没，不想要保留 `children:[]` 可以将参数 `isDeleteEmptyChildren` 设置为 `true`
 
 ```TypeScript
-import { deleteNodesByIds } from "@handsomewolf/tree-data";
+import { TreeData } from "@handsomewolf/tree-data";
 
-const tree = [
+const treeData = new TreeData([
   {
     id: 1,
     children: [
@@ -78,10 +80,10 @@ const tree = [
       },
     ],
   },
-];
+]);
 
-const result=deleteNodesByIds(tree, [2,4], { isDeleteEmptyChildren: true })
-console.log(result)
+const result = treeData.deleteNodesByIds([2,4], { isDeleteEmptyChildren: true }).getResult();
+console.log(result);
 
 // 输出：
 // [{ id: 1, }]
@@ -90,9 +92,9 @@ console.log(result)
 自定义键名
 
 ```TypeScript
-import { deleteNodesByIds } from "@handsomewolf/tree-data";
+import { TreeData } from "@handsomewolf/tree-data";
 
-const tree = [
+const treeData = new TreeData([
   {
     id: 1,
     children: [
@@ -109,15 +111,13 @@ const tree = [
       },
     ],
   },
-];
+], {
+  childrenKey: "myChildren",
+  idKey: "myId",
+});
 
-const idsToDelete = [3, 4];
-
-const result = deleteNodesByIds(tree, idsToDelete, {
-                  childrenKey: "myChildren",
-                  idKey: "myId",
-                })
-console.log(result)
+const result = treeData.deleteNodesByIds([3, 4]).getResult();
+console.log(result);
 
 // 输出：
 // [{ myId: 1, myChildren: [ { id: 2 } ] }]
@@ -129,9 +129,9 @@ console.log(result)
 ### 示例
 
 ```TypeScript
-import { deleteNodes } from "@handsomewolf/tree-data";
+import { TreeData } from "@handsomewolf/tree-data";
 
-const tree = [
+const treeData = new TreeData([
   {
     id: 1,
     children: [
@@ -148,10 +148,10 @@ const tree = [
       },
     ],
   },
-];
+]);
 
-const result=deleteNodes(tree,(node) => node.id === 2 || node.id === 4)
-console.log(result)
+const result = treeData.deleteNodes((node) => node.id === 2 || node.id === 4).getResult();
+console.log(result);
 
 // 输出：
 // [{ id: 1, children: [] }]
@@ -160,9 +160,9 @@ console.log(result)
 若子元素全部删除没，不想要保留 `children:[]` 可以将参数 `isDeleteEmptyChildren` 设置为 `true`
 
 ```TypeScript
-import { deleteNodes } from "@handsomewolf/tree-data";
+import { TreeData } from "@handsomewolf/tree-data";
 
-const tree = [
+const treeData = new TreeData([
   {
     id: 1,
     children: [
@@ -179,10 +179,10 @@ const tree = [
       },
     ],
   },
-];
+]);
 
-const result=deleteNodes(tree, (node) => node.id === 2 || node.id === 4, { isDeleteEmptyChildren: true })
-console.log(result)
+const result = treeData.deleteNodes((node) => node.id === 2 || node.id === 4, { isDeleteEmptyChildren: true }).getResult();
+console.log(result);
 
 // 输出：
 // [{ id: 1, }]
@@ -191,9 +191,9 @@ console.log(result)
 自定义键名
 
 ```TypeScript
-import { deleteNodes } from "@handsomewolf/tree-data";
+import { TreeData } from "@handsomewolf/tree-data";
 
-const tree = [
+const treeData = new TreeData([
   {
     id: 1,
     children: [
@@ -210,13 +210,13 @@ const tree = [
       },
     ],
   },
-];
-
-const result = deleteNodes(tree, (node) => node.id === 3 || node.id === 4, {
+], {
   childrenKey: "myChildren",
   idKey: "myId",
-})
-console.log(result)
+});
+
+const result = treeData.deleteNodes((node) => node.id === 3 || node.id === 4).getResult();
+console.log(result);
 
 // 输出：
 // [{ myId: 1, myChildren: [ { id: 2 } ] }]

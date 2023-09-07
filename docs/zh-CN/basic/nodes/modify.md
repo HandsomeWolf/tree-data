@@ -13,24 +13,20 @@
 ## 语法
 
 ```TypeScript
-modifyNodesByIds(tree, ids, keyValuePairs, options)
+import { TreeData } from "@handsomewolf/tree-data";
 
-modifyNodes(tree, modifyFunction, options)
+const treeData = new TreeData()
+treeData.modifyNodesByIds( ids, keyValuePairs)
+
+treeData.modifyNodes( modifyFunction)
 ```
-
-## 可选参数
-
-| 参数名 | 值类型 | 作用 |
-| --- | --- | --- |
-| idKey | String | id的键名，默认为 `id` |
-| childrenKey | String | children的键名，默认为 `children` |
 
 ## modifyNodesByIds
 
 ### 示例
 
 ```TypeScript
-import { modifyNodesByIds } from "@handsomewolf/tree-data";
+import { TreeData } from "@handsomewolf/tree-data";
 
 const tree = [
   { id: 1, value: "node1", children: [] },
@@ -38,10 +34,47 @@ const tree = [
   { id: 3, value: "node3", children: [] },
 ];
 
+const treeData = new TreeData([
+  { id: 1, value: "node1", children: [] },
+  { id: 2, value: "node2", children: [] },
+  { id: 3, value: "node3", children: [] },
+]);
+
 const ids = [1, 3];
 const keyValuePairs = { value: "modified" };
 
-const result = modifyNodesByIds(tree, ids, keyValuePairs);
+treeData.modifyNodesByIds(ids, keyValuePairs);
+const result = treeData.getResult();
+console.log(result)
+
+// 输出：
+// [
+//   { id: 1, value: "modified", children: [] },
+//   { id: 2, value: "node2", children: [] },
+//   { id: 3, value: "modified", children: [] },
+// ]
+```
+
+## modifyNodes
+
+### 示例
+
+```TypeScript
+import { TreeData } from "@handsomewolf/tree-data";
+
+const treeData = new TreeData([
+  { id: 1, value: "node1", children: [] },
+  { id: 2, value: "node2", children: [] },
+  { id: 3, value: "node3", children: [] },
+]);
+
+treeData.modifyNodes(node => {
+  if (node.id === 1 || node.id === 3) {
+    return { ...node, value: "modified" };
+  }
+  return node;
+});
+const result = treeData.getResult();
 console.log(result)
 
 // 输出：

@@ -1,18 +1,20 @@
 ## 功能
 
-深度优先遍历 (Depth-First Search)
+深度优先遍历 (DFS: Depth-First Search)
 
 
 ## 语法
 
 ```TypeScript
-traverseDFS(tree, callback)
+import { TreeData } from "@handsomewolf/tree-data";
+
+TreeData.traverseDFS(tree, callback)
 ```
 
 ## 示例
 
 ```TypeScript
-import { traverseDFS } from "@handsomewolf/tree-data";
+import { TreeData } from "@handsomewolf/tree-data";
 
 const tree = [
   {
@@ -32,9 +34,9 @@ const tree = [
   },
 ];
 
-const result = traverseDFS(tree, (node) => result.push(node.id));
+const result: number[] = [];
+TreeData.traverseDFS(tree, (node) => result.push(node.id));
 console.log(result)
 
 // 输出：[1, 2, 4, 5, 6, 3]
-
 ```
