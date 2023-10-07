@@ -461,76 +461,95 @@ export class TreeData {
     const isDeleteEmptyChildren = options?.isDeleteEmptyChildren || false;
 
     const newTree: KeyValueObject[] = _.cloneDeep(currentTree);
-    const queue: KeyValueObject[] = [...newTree];
-    const parents: { [key: string]: KeyValueObject[] } = {};
 
     let includeExists = false; // Add a flag to check if any node satisfies the include condition (添加一个标志来检查是否有任何节点满足 include 条件)
+    for (const tree of newTree) {
+      const queue: KeyValueObject[] = [tree];
+      const parents: { [key: string]: KeyValueObject[] } = {};
 
-    while (!_.isEmpty(queue)) {
-      const node = queue.shift() as KeyValueObject;
+      while (!_.isEmpty(queue)) {
+        const node = queue.shift() as KeyValueObject;
 
-      if (!Object.prototype.hasOwnProperty.call(node, this.idKey)) {
-        console.warn(
-          `Node is missing '${this.idKey}' field. You may need to use the optional parameter {idKey: 'your custom id'}`,
-        );
-      }
-
-      if (options?.exclude) {
-        markNodesForDeletion(node, options.exclude, this.idKey, parents);
-      }
-
-      if (options?.include) {
-        const includeResult = markNodesForDeletion(
-          node,
-          options.include,
-          this.idKey,
-          parents,
-          true,
-        );
-        if (includeResult) {
-          includeExists = true; // If any node satisfies the include condition, set the flag to true (如果有任何节点满足 include 条件，将标志设置为 true)
-        }
-      }
-
-      const children = node[this.childrenKey] as KeyValueObject[];
-      if (children) {
-        for (const child of children) {
-          if (!parents[child[this.idKey]]) {
-            parents[child[this.idKey]] = [];
-          }
-          parents[child[this.idKey]].push(node);
-          queue.push(child);
-        }
-      }
-    }
-
-    // If the include option is set and no node satisfies the include condition, return null (如果设置了 include 选项并且没有节点满足 include 条件，返回 null)
-    if (options?.include && !includeExists) {
-      this.result = null;
-      return this;
-    }
-
-    for (const parentList of Object.values(parents)) {
-      for (const parent of parentList) {
-        if (parent && parent.toBeDeletedChildren) {
-          _.remove(parent[this.childrenKey], (child: KeyValueObject) =>
-            parent.toBeDeletedChildren.includes(child[this.idKey]),
+        if (!Object.prototype.hasOwnProperty.call(node, this.idKey)) {
+          console.warn(
+            `Node is missing '${this.idKey}' field. You may need to use the optional parameter {idKey: 'your custom id'}`,
           );
-          delete parent.toBeDeletedChildren;
+          this.result = newTree;
+
+          return this;
+        }
+
+        if (options?.exclude) {
+          markNodesForDeletion(node, options.exclude, this.idKey, parents);
+        }
+
+        if (options?.include) {
+          const includeResult = markNodesForDeletion(
+            node,
+            options.include,
+            this.idKey,
+            parents,
+            true,
+          );
+          if (includeResult) {
+            includeExists = true; // If any node satisfies the include condition, set the flag to true (如果有任何节点满足 include 条件，将标志设置为 true)
+          }
+        }
+
+        const children = node[this.childrenKey] as KeyValueObject[];
+        if (children) {
+          for (const child of children) {
+            if (!parents[child[this.idKey]]) {
+              parents[child[this.idKey]] = [];
+            }
+            parents[child[this.idKey]].push(node);
+            queue.push(child);
+          }
         }
       }
-    }
 
-    if (isDeleteEmptyChildren) {
+      // If the include option is set and no node satisfies the include condition, return null (如果设置了 include 选项并且没有节点满足 include 条件，返回 null)
+      if (options?.include && !includeExists) {
+        this.result = null;
+        return this;
+      }
+
       for (const parentList of Object.values(parents)) {
         for (const parent of parentList) {
-          if (parent && _.isEmpty(parent[this.childrenKey])) {
-            delete parent[this.childrenKey];
+          if (parent && parent.toBeDeletedChildren) {
+            _.remove(parent[this.childrenKey], (child: KeyValueObject) =>
+              parent.toBeDeletedChildren.includes(child[this.idKey]),
+            );
+            delete parent.toBeDeletedChildren;
+          }
+        }
+      }
+
+      if (isDeleteEmptyChildren) {
+        for (const parentList of Object.values(parents)) {
+          for (const parent of parentList) {
+            if (parent && _.isEmpty(parent[this.childrenKey])) {
+              delete parent[this.childrenKey];
+            }
           }
         }
       }
     }
-    this.result = newTree;
+
+    this.result = newTree.filter((tree) => {
+      // 检查根节点是否满足 include 条件
+      const rootSatisfiesInclude =
+        options.include &&
+        Object.keys(options.include).every((key) =>
+          options.include[key].includes(tree[key]),
+        );
+
+      // 保留满足 include 条件的根节点，或者有子节点的树
+      return (
+        rootSatisfiesInclude || (tree.children && tree.children.length > 0)
+      );
+    });
+
     return this;
   }
   // utils

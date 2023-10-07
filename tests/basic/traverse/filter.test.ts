@@ -620,10 +620,7 @@ describe("filterTree", () => {
             {
               id: 2,
               parentId: 1,
-              children: [
-                { id: 4, parentId: 2 },
-                { id: 5, parentId: 2 },
-              ],
+              children: [{ id: 5, parentId: 2 }],
             },
             { id: 3, parentId: 1 },
           ],
@@ -637,15 +634,18 @@ describe("filterTree", () => {
             { id: 2, parentId: 1, children: [{ id: 4, parentId: 2 }] },
           ],
         },
-        {
-          id: 1,
-          parentId: null,
-          children: [
-            { id: 2, parentId: 1, children: [{ id: 4, parentId: 2 }] },
-          ],
-        },
       ];
       treeData = new TreeData(tree);
+      console.log(
+        JSON.stringify(
+          treeData
+            .filterTree({
+              include: { id: [4] },
+              isDeleteEmptyChildren: true,
+            })
+            .getResult(),
+        ),
+      );
       expect(
         treeData
           .filterTree({
@@ -908,6 +908,64 @@ describe("filterTree", () => {
         treeData
           .filterTree({
             include: { parentId: [888] },
+          })
+          .getResult(),
+      ).toEqual(expected);
+    });
+  });
+
+  describe("custom", () => {
+    it("normal", () => {
+      const tree = [
+        {
+          myId: 1,
+          myParentId: null,
+          children: [
+            { myId: 2, myParentId: 1, children: [{ myId: 4, myParentId: 2 }] },
+            { myId: 3, myParentId: 1, children: [{ myId: 6, myParentId: 3 }] },
+          ],
+        },
+        {
+          myId: 8,
+          myParentId: null,
+          children: [
+            { myId: 2, myParentId: 1, children: [{ myId: 4, myParentId: 2 }] },
+            { myId: 3, myParentId: 1, children: [{ myId: 5, myParentId: 3 }] },
+          ],
+        },
+      ];
+      const expected = [
+        {
+          myId: 1,
+          myParentId: null,
+          children: [
+            {
+              myId: 3,
+              myParentId: 1,
+              children: [{ myId: 6, myParentId: 3 }],
+            },
+          ],
+        },
+      ];
+      treeData = new TreeData(tree, {
+        idKey: "myId",
+        parentIdKey: "myParentId",
+        childrenKey: "children",
+      });
+
+      console.log(
+        JSON.stringify(
+          treeData
+            .filterTree({
+              include: { myId: [6] },
+            })
+            .getResult(),
+        ),
+      );
+      expect(
+        treeData
+          .filterTree({
+            include: { myId: [6] },
           })
           .getResult(),
       ).toEqual(expected);
