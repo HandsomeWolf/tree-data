@@ -1,6 +1,6 @@
 {
   "name": "@handsomewolf/tree-data",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Data conversion, tree node manipulation, query and tree traversal, etc.",
   "keywords": [
     "data transformation",
@@ -19,8 +19,8 @@
     "url": "git+https://github.com/HandsomeWolf/tree-data"
   },
   "author": "HandsomeWolf <55856773@qq.com> (https://github.com/handsomewolf)",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
