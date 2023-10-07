@@ -541,7 +541,7 @@ export class TreeData {
       const rootSatisfiesInclude =
         options.include &&
         Object.keys(options.include).every((key) =>
-          options.include[key].includes(tree[key]),
+          options.include![key].includes(tree[key]),
         );
 
       // 保留满足 include 条件的根节点，或者有子节点的树

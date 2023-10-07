@@ -636,16 +636,6 @@ describe("filterTree", () => {
         },
       ];
       treeData = new TreeData(tree);
-      console.log(
-        JSON.stringify(
-          treeData
-            .filterTree({
-              include: { id: [4] },
-              isDeleteEmptyChildren: true,
-            })
-            .getResult(),
-        ),
-      );
       expect(
         treeData
           .filterTree({
@@ -952,16 +942,6 @@ describe("filterTree", () => {
         parentIdKey: "myParentId",
         childrenKey: "children",
       });
-
-      console.log(
-        JSON.stringify(
-          treeData
-            .filterTree({
-              include: { myId: [6] },
-            })
-            .getResult(),
-        ),
-      );
       expect(
         treeData
           .filterTree({
